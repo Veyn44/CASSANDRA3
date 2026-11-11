@@ -1,5 +1,5 @@
 const ID_PATTERN = /^[a-z][a-z0-9.-]*$/;
-const TYPE_PATTERN = /^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
+const TYPE_PATTERN = /^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$/;
 let nextBusInstance = 1;
 
 export class EventBusError extends Error {
@@ -18,31 +18,97 @@ function assertId(value, label) {
   return value;
 }
 
+function invalidPayload(path, reason) {
+  throw new EventBusError("INVALID_PAYLOAD", `${path} ${reason}`, { path });
+}
+
+/**
+ * Copies JSON-like data without invoking accessors or assigning through
+ * Object.prototype setters. Only dense arrays and plain data objects are
+ * accepted. Shared references are copied independently; cycles are rejected.
+ */
 function cloneImmutable(value, seen = new WeakSet(), path = "payload") {
   if (value === null || typeof value === "string" || typeof value === "boolean") return value;
   if (typeof value === "number" && Number.isFinite(value)) return value;
   if (typeof value !== "object") {
-    throw new EventBusError("INVALID_PAYLOAD", `${path} contains a non-serializable value.`, { path });
+    invalidPayload(path, "contains a non-serializable value.");
   }
   if (seen.has(value)) {
-    throw new EventBusError("INVALID_PAYLOAD", `${path} contains a circular reference.`, { path });
+    invalidPayload(path, "contains a circular reference.");
   }
-  const prototype = Object.getPrototypeOf(value);
-  if (!Array.isArray(value) && prototype !== Object.prototype && prototype !== null) {
-    throw new EventBusError("INVALID_PAYLOAD", `${path} must contain only plain objects and arrays.`, { path });
+
+  let prototype;
+  let keys;
+  try {
+    prototype = Object.getPrototypeOf(value);
+    keys = Reflect.ownKeys(value);
+  } catch {
+    invalidPayload(path, "could not be inspected as plain data.");
   }
-  seen.add(value);
-  let copy;
-  if (Array.isArray(value)) {
-    copy = value.map((entry, index) => cloneImmutable(entry, seen, `${path}[${index}]`));
-  } else {
-    copy = {};
-    for (const [key, entry] of Object.entries(value)) {
-      copy[key] = cloneImmutable(entry, seen, `${path}.${key}`);
+
+  const isArray = Array.isArray(value);
+  if (isArray) {
+    if (prototype !== Array.prototype) {
+      invalidPayload(path, "must use the standard Array prototype.");
     }
+  } else if (prototype !== Object.prototype && prototype !== null) {
+    invalidPayload(path, "must contain only plain objects and arrays.");
   }
-  seen.delete(value);
-  return Object.freeze(copy);
+
+  seen.add(value);
+  try {
+    if (isArray) {
+      const length = value.length;
+      const copy = new Array(length);
+      const present = new Set();
+
+      for (const key of keys) {
+        if (key === "length") continue;
+        if (typeof key !== "string") {
+          invalidPayload(path, "contains a symbol-keyed array property.");
+        }
+        const index = Number(key);
+        if (!Number.isInteger(index) || index < 0 || index >= length || String(index) !== key) {
+          invalidPayload(path, `contains an unsupported array property (${key}).`);
+        }
+        const descriptor = Object.getOwnPropertyDescriptor(value, key);
+        if (!descriptor || !descriptor.enumerable || !Object.hasOwn(descriptor, "value")) {
+          invalidPayload(`${path}[${key}]`, "must be an enumerable data property, not an accessor or hidden property.");
+        }
+        present.add(index);
+        copy[index] = cloneImmutable(descriptor.value, seen, `${path}[${index}]`);
+      }
+
+      if (present.size !== length) {
+        invalidPayload(path, "contains an array hole; arrays must be dense.");
+      }
+      return Object.freeze(copy);
+    }
+
+    const copy = Object.create(prototype);
+    for (const key of keys) {
+      if (typeof key !== "string") {
+        invalidPayload(path, "contains a symbol-keyed object property.");
+      }
+      const descriptor = Object.getOwnPropertyDescriptor(value, key);
+      if (!descriptor || !descriptor.enumerable || !Object.hasOwn(descriptor, "value")) {
+        invalidPayload(`${path}.${key}`, "must be an enumerable data property, not an accessor or hidden property.");
+      }
+      const clonedValue = cloneImmutable(descriptor.value, seen, `${path}.${key}`);
+      Object.defineProperty(copy, key, {
+        value: clonedValue,
+        enumerable: true,
+        writable: false,
+        configurable: false
+      });
+    }
+    return Object.freeze(copy);
+  } catch (error) {
+    if (error instanceof EventBusError) throw error;
+    invalidPayload(path, "could not be safely copied.");
+  } finally {
+    seen.delete(value);
+  }
 }
 
 /**
@@ -133,15 +199,23 @@ export class EventBus {
       throw new EventBusError("INVALID_PAYLOAD", "Event payload must be a data object.", { type });
     }
 
-    const sequence = ++this.#sequence;
+    // Validate and detach the complete payload before consuming a sequence.
+    const immutablePayload = cloneImmutable(payload);
+    if (this.#sequence >= Number.MAX_SAFE_INTEGER) {
+      throw new EventBusError("SEQUENCE_EXHAUSTED", "Event sequence reached Number.MAX_SAFE_INTEGER.");
+    }
+    const sequence = this.#sequence + 1;
     const event = Object.freeze({
       id: `event:${this.#instanceId}:${sequence}`,
       type,
       version,
       source,
       sequence,
-      payload: cloneImmutable(payload)
+      payload: immutablePayload
     });
+
+    // Commit the sequence only after the event is fully constructed.
+    this.#sequence = sequence;
     this.#queue.push(event);
     if (!this.#draining) this.#drain();
     return event;
