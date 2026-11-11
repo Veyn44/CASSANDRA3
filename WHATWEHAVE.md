@@ -38,3 +38,29 @@ Popis má být stručný, ale dostatečně vysvětlující, aby bylo jasné, co 
 - Technické detaily API patří do dokumentace konkrétního systému.
 - Důvody, záměry a filozofie rozhodnutí patří do `WHATWEDID.md`.
 - Plány a dosud neimplementované požadavky patří do `WHATTODO.md`.
+
+## Gameplay Controls — pracovní větev
+
+**Větev:** `feature/gameplay-controls`
+
+- Nové rozložení laboratorního prostředí přes celou dostupnou plochu: levý příkazový panel, centrální mapa a pravý stavový panel.
+- Připravené přepínání skutečného fullscreen režimu přes uživatelské tlačítko.
+- Draft lze přepínat tlačítkem i klávesou `F`.
+- Pause lze přepínat tlačítkem i mezerníkem; při pauze se zobrazuje pulzující žlutý rám mapy.
+- Kamera standardně sleduje protagonisty. Kolečko mění zoom se zachováním bodu pod kurzorem, čímž umožňuje odklon pohledu; další vstup WASD obnoví Camera Lock.
+- Vstupní stav WASD zůstává zachován přes pauzu; při ztrátě fokusu okna nebo skrytí stránky se bezpečně vymaže.
+- Pohyb je nastaven na 4 mapové dlaždice za sekundu při 1×. Jedna dlaždice odpovídá 4 world units; laboratorní rychlosti 2×/3× násobí pohyb stejně jako dosavadní testovací ovládání.
+
+**Stav ověření:** Implementace je zapsána v pracovní větvi, ale zatím nebyla ověřena spuštěním v prohlížeči. Vizuální doladění a případné opravy čekají na uživatelský test. Tato větev není schválená pro sloučení do `main`.
+
+
+## Gameplay Controls — druhá iterace (runtime ověření čeká)
+
+- Mapa má rozměr 128 × 128 dlaždic; jedna dlaždice odpovídá 4 world units, celkem tedy 512 × 512 world units.
+- Protagonista má kulaté tyrkysové tělo s měkkým pulzujícím halo a jediné oko sledující směr pohledu; směrová šipka byla odstraněna.
+- Oko se otáčí maximální rychlostí 240°/s. Zaměřování je aktivní pouze při běžící simulaci a zapnutém Draft režimu; během pauzy i při Draft OFF zůstává směr zmrazen.
+- Prostřední tlačítko myši umožňuje ruční posun kamery tažením mapy, včetně pauzy. Kolečko nadále ovládá zoom kolem kurzoru.
+- Stisknutí WASD obnovuje Camera Lock i při pauze; samotný pohyb protagonisty zůstává při pauze zastaven.
+- Pohyb je 4 dlaždice/s při 1×; kolizní model a terénní pravidla zůstaly zachovány, jejich souřadnice a rozměry byly proporcionálně převedeny do nové mapové velikosti.
+
+**Stav ověření:** Změny jsou zapsány v pracovní větvi. Prohlížečový test přes GitHub Pages zatím čeká; tento popis neznamená potvrzený runtime PASS.
