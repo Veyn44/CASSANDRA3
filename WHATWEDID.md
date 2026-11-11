@@ -135,3 +135,25 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Dočasné laboratorní chování:** Rychlosti 1×/2×/3× násobí delta pohybu v aréně, protože laboratoř ověřuje společné ovládací prvky. Toto chování nepřebíjí schválené pravidlo WHATTODO/WHATWEDID: v ostrém encounteru bude pohyb probíhat v reálném čase a nebude násoben strategickou rychlostí.
 
 **Stav:** Implementace zapsána do main; runtime ověření čeká.
+
+
+## Rozhodnutí: atomický lifecycle systémů
+
+**Rozhodnutí:** Celá sestava systémů se spouští atomicky. Selhání libovolného systému během inicializace nebo startu znamená selhání celé sestavy; žádný další systém se již nespouští.
+
+**Důvod:** Částečně běžící hra by mohla vytvořit stav, ve kterém některé systémy předpokládají existenci služeb, které se nikdy správně nespustily. Tichá degradace nebo automatické vynechání systému by zamlžily příčinu problému a vytvořily obtížně reprodukovatelné chyby. Volitelnost služby řeší deklarace závislostí, nikoli výjimka z integrity spuštění.
+
+**Pravidlo lifecycle:**
+1. Nejprve se validují všechny deklarace systémů, služeb a závislostí.
+2. Inicializace probíhá v topologickém pořadí poskytovatelů před konzumenty.
+3. Veřejné API poskytovatele se zveřejní až po úspěšném dokončení jeho inicializace.
+4. Start všech systémů začne až poté, co úspěšně inicializují všechny systémy.
+5. Při chybě initialize/start se sestava označí jako failed a provede se rollback přes destroy v opačném pořadí úspěšně inicializovaných systémů.
+6. Chyba při destroy se zaznamená, ale nesmí zastavit úklid ostatních systémů.
+7. Pause probíhá v opačném pořadí závislostí, resume v pořadí závislostí; tyto hooky jsou volitelné.
+
+**Herní dopad:** Hra nezačne simulovat s neúplnou sadou systémů. Vývojové chyby se projeví okamžitě a srozumitelně, místo aby se přenesly do pozdějších a hůře diagnostikovatelných situací.
+
+**Architektonický dopad:** Bootstrap vlastní orchestraci a interní Registry. Game Context poskytuje systémům pouze veřejný resolver služeb a oddělené infrastrukturní služby; nesmí odhalovat mutační API Registry.
+
+**Stav:** Schváleno a implementováno v `subfeature/core-architecture/lifecycle-bootstrap`; runtime ověření čeká.
