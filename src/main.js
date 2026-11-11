@@ -117,46 +117,39 @@ function drawTerrain() {
     ctx.fillStyle = "#07101655"; ctx.fillRect(block.x + 1.4, block.y + block.h - 2, Math.max(0, block.w - 2.8), .6);
   }
 }
-function drawPawn(pawn, now) {
-  const isPlayer = pawn.role === "player";
-  const r = isPlayer ? 4.7 : 4.45;
+function drawPawn(pawn) {
+  // Every Pawn uses the same one-tile footprint and the same flat visual language.
+  const r = TILE_SIZE / 2;
   ctx.save();
   ctx.translate(pawn.x, pawn.y);
-  if (isPlayer) {
-    const pulse = 0.5 + 0.5 * Math.sin(now / 430);
-    const halo = ctx.createRadialGradient(0, 0, r * .55, 0, 0, r * 2.6);
-    halo.addColorStop(0, `rgba(72,235,224,${0.22 + pulse * 0.12})`);
-    halo.addColorStop(1, "rgba(72,235,224,0)");
-    ctx.fillStyle = halo; ctx.beginPath(); ctx.arc(0, 0, r * 2.6, 0, Math.PI * 2); ctx.fill();
-    ctx.shadowColor = "#42e8dc"; ctx.shadowBlur = 5 + pulse * 4;
-    const body = ctx.createRadialGradient(-r * .32, -r * .4, .3, 0, 0, r * 1.15);
-    body.addColorStop(0, "#d4fffa"); body.addColorStop(.22, "#78f5e9"); body.addColorStop(.68, "#24bdb8"); body.addColorStop(1, "#08777e");
-    ctx.fillStyle = body; ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
-    ctx.shadowBlur = 0; ctx.strokeStyle = `rgba(180,255,247,${.55 + pulse * .3})`; ctx.lineWidth = .45; ctx.stroke();
-    // A single small eye is the only directional feature; no arrow or nose marker.
-    ctx.rotate(pawn.facing);
-    ctx.fillStyle = "#07363b"; ctx.beginPath(); ctx.ellipse(r * .57, 0, r * .23, r * .31, 0, 0, Math.PI * 2); ctx.fill();
-    ctx.fillStyle = "#f1fffd"; ctx.beginPath(); ctx.arc(r * .62, -r * .09, r * .105, 0, Math.PI * 2); ctx.fill();
-  } else {
-    ctx.fillStyle = pawn.color; ctx.shadowColor = pawn.color; ctx.shadowBlur = 2;
-    ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
-    ctx.shadowBlur = 0; ctx.strokeStyle = "#dce9e8"; ctx.lineWidth = .35; ctx.stroke();
-    ctx.fillStyle = "#17242a"; ctx.beginPath(); ctx.arc(r * .25, 0, r * .2, 0, Math.PI * 2); ctx.fill();
-  }
+  ctx.fillStyle = pawn.color;
+  ctx.beginPath(); ctx.arc(0, 0, r, 0, Math.PI * 2); ctx.fill();
+
+  ctx.strokeStyle = "rgba(235,250,248,0.72)";
+  ctx.lineWidth = 0.16;
+  ctx.beginPath(); ctx.arc(0, 0, r - 0.12, 0, Math.PI * 2); ctx.stroke();
+
+  // A small black direction dot replaces the former eye; it is identical on every Pawn.
+  const markerDistance = r * 0.48;
+  ctx.fillStyle = "#071318";
+  ctx.beginPath();
+  ctx.arc(Math.cos(pawn.facing) * markerDistance, Math.sin(pawn.facing) * markerDistance, r * 0.19, 0, Math.PI * 2);
+  ctx.fill();
   ctx.restore();
+
   ctx.save(); ctx.font = "5.8px ui-monospace,monospace"; ctx.textAlign = "center"; ctx.fillStyle = "#d9e8e9";
-  ctx.shadowColor = "#071016"; ctx.shadowBlur = 2; ctx.fillText(pawn.name.toUpperCase(), pawn.x, pawn.y - r - 4); ctx.restore();
+  ctx.shadowColor = "#071016"; ctx.shadowBlur = 2; ctx.fillText(pawn.name.toUpperCase(), pawn.x, pawn.y - r - 2.5); ctx.restore();
 }
-function draw(now) {
+function draw() {
   const view = worldView(), width = view.rect.width, height = view.rect.height, scale = view.scale;
   ctx.clearRect(0, 0, width, height); ctx.fillStyle = "#101d24"; ctx.fillRect(0, 0, width, height);
   ctx.save(); ctx.translate(width / 2 - camera.x * scale, height / 2 - camera.y * scale); ctx.scale(scale, scale);
   ctx.fillStyle = "#14242b"; ctx.fillRect(0, 0, WORLD.width, WORLD.height);
   drawGrid(); drawTerrain(); ctx.strokeStyle = "#68828a"; ctx.lineWidth = .8; ctx.strokeRect(0, 0, WORLD.width, WORLD.height);
-  for (const pawn of arena.pawns) drawPawn(pawn, now);
+  for (const pawn of arena.pawns) drawPawn(pawn);
   ctx.restore();
   stage.classList.toggle("paused", paused); ui.pause.classList.toggle("is-paused", paused);
-  ui.pause.innerHTML = paused ? "<span><i class=\"pause-glyph\">▶</i> RESUME SIMULATION</span><kbd>SPACE</kbd>" : "<span><i class=\"pause-glyph\">Ⅱ</i> PAUSE SIMULATION</span><kbd>SPACE</kbd>";
+  ui.pause.innerHTML = paused ? "<span><i class=\\"pause-glyph\\">▶</i> RESUME SIMULATION</span><kbd>SPACE</kbd>" : "<span><i class=\\"pause-glyph\\">Ⅱ</i> PAUSE SIMULATION</span><kbd>SPACE</kbd>";
   ui.draft.classList.toggle("active", drafted);
   ui.speedLabel.textContent = `${speed}×`;
   ui.diagnostics.textContent = `FPS ${fps} · ZOOM ${Math.round(zoom * 100)}% · MAP 128×128`;
@@ -165,7 +158,7 @@ let last = performance.now();
 function frame(now) {
   const raw = Math.min((now - last) / 1000, .05); last = now;
   const dt = paused ? 0 : raw;
-  update(dt); draw(now);
+  update(dt); draw();
   if (!paused) elapsed += raw;
   fpsFrames++; fpsTime += raw;
   if (fpsTime >= .5) { fps = Math.round(fpsFrames / fpsTime); fpsFrames = 0; fpsTime = 0; }
