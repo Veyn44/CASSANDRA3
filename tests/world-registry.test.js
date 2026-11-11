@@ -107,8 +107,6 @@ test("world records and dimensions are immutable", () => {
   assert(Object.isFrozen(world));
   assert(Object.isFrozen(world.dimensions));
   equal(world.dimensions.width, 128);
-  equal(Object.isFrozen(world), true);
-  equal(Object.isFrozen(world.dimensions), true);
 });
 
 test("activating one world exposes it as the only active world", () => {
