@@ -35,3 +35,24 @@ Map contents, entities, galaxy hierarchy, rendering, simulation and transition o
 ## Explicit non-goals
 
 No map generation, map tile data, entities or entity placement, Galaxy System data, input routing, rendering, pause ownership, scheduler control, world transition transaction, expedition lifecycle, shuttle, or UI. World Registry only maintains map-world descriptors and the active-world invariant; a higher-level World Context/transition coordinator will orchestrate safe transitions and side effects.
+
+
+## Testovací scénáře
+
+`tests/world-registry.test.js` obsahuje **26 automatických scénářů**. Runner: `tests/world-registry.html`.
+
+### Manuální / integrační ověření po zapojení
+- [ ] Zaregistrovat Cassandru a ověřit její stabilní worldId.
+- [ ] Aktivovat Cassandru; ověřit, že je jediným aktivním světem.
+- [ ] Aktivovat encounter; Cassandra se musí stát neaktivní a encounter jediným aktivním světem.
+- [ ] Deaktivovat encounter; nesmí zůstat aktivní jiný svět, dokud jej přechodový orchestrátor znovu neaktivuje.
+- [ ] Uzavřít pouze neaktivní encounter; pokus uzavřít aktivní encounter musí být odmítnut.
+- [ ] Ověřit opakovanou návštěvu stejné asteroid locationId s novým encounterId a worldId.
+- [ ] Uložit a obnovit snapshot; aktivní svět a všechny world descriptors musí zůstat konzistentní.
+- [ ] Ověřit, že Galaxy Data Context nelze zaregistrovat jako playable world.
+
+**Očekáváme:** vždy nejvýše jeden aktivní mapový svět; přechodová orchestrace zatím není součástí tohoto modulu.
+
+**Nesmí se stát:** World Registry nesmí sama přesouvat entity, měnit mapová data, spouštět/pozastavovat Scheduler nebo přepínat input/render target.
+
+**Stav:** 26 scénářů připraveno; runtime spuštění čeká.
