@@ -124,6 +124,63 @@ test("persistence participant set includes identity, world and placement owners"
   await runtime.destroy();
 });
 
+
+test("failed system startup destroys initialized systems and leaves no running runtime", async () => {
+  let destroyed = false;
+  const runtime = createCoreAssembly({
+    demoSystem: {
+      start() { throw new Error("injected startup failure"); },
+      destroy() { destroyed = true; }
+    }
+  });
+  await rejects(() => runtime.start());
+  equal(runtime.state, "failed");
+  assert(destroyed, "Initialized demo system was not destroyed after startup failure");
+});
+
+test("invalid world transfer leaves the previous placement unchanged", async () => {
+  const runtime = createCoreAssembly();
+  const context = await runtime.start();
+  const placements = context.getService("core.world-context");
+  const before = placements.getPlacement("entity:integration-pawn");
+  let error = null;
+  try {
+    placements.moveEntity("entity:integration-pawn", {
+      type: "world", worldId: "world:missing", position: { x: 4, y: 5 }
+    });
+  } catch (caught) { error = caught; }
+  assert(error, "Invalid transfer unexpectedly succeeded");
+  equal(placements.getPlacement("entity:integration-pawn"), before);
+  await runtime.destroy();
+});
+
+test("failed restore commit rolls back earlier Core participants", async () => {
+  const runtime = createCoreAssembly();
+  const context = await runtime.start();
+  const persistence = context.getService("core.persistence");
+  const placements = context.getService("core.world-context");
+  let rollbackCalled = false;
+  persistence.registerParticipant({
+    id: "test.integration-failure",
+    schemaVersion: 1,
+    order: 100,
+    captureSnapshot: () => ({ marker: "saved" }),
+    prepareRestore: () => ({
+      commit() { throw new Error("injected participant commit failure"); },
+      rollback() { rollbackCalled = true; }
+    })
+  });
+  await persistence.save("rollback-slot", { campaignId: "campaign:rollback" });
+  placements.moveEntity("entity:integration-pawn", {
+    type: "world", worldId: "world:cassandra", position: { x: 40, y: 41 }
+  });
+  await rejects(() => persistence.load("rollback-slot", { campaignId: "campaign:rollback" }));
+  assert(rollbackCalled, "Failing participant did not receive rollback");
+  equal(placements.getPlacement("entity:integration-pawn").position.x, 40);
+  equal(placements.getPlacement("entity:integration-pawn").position.y, 41);
+  await runtime.destroy();
+});
+
 test("pause and resume are coordinated by Bootstrap", async () => {
   const runtime = createCoreAssembly();
   await runtime.start();
