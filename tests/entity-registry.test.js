@@ -75,7 +75,8 @@ test("invalid kinds and identifiers are rejected", () => {
   const registry = makeRegistry();
   throwsCode(() => registry.registerPersistent({ id: "../bad", kind: "pawn" }), "INVALID_ENTITY_ID");
   throwsCode(() => registry.registerPersistent({ id: "pawn:1", kind: "Pawn" }), "INVALID_ENTITY_KIND");
-  throwsCode(() => registry.registerEncounter({ encounterId: "e", localId: "x", kind: "enemy" }), "DUPLICATE_ENTITY_ID");
+  const valid = registry.registerEncounter({ encounterId: "e", localId: "x", kind: "enemy" });
+  equal(valid.id, "encounter:e:x");
 });
 
 test("Entity Store only accepts active encounter entities", () => {
@@ -151,6 +152,15 @@ test("restore rollback reinstates previous registry state", () => {
   transaction.commit();
   transaction.rollback();
   assert(registry.has("old:1") && !registry.has("new:1"));
+});
+
+test("snapshot accessors are rejected without being invoked", () => {
+  const registry = makeRegistry();
+  let called = false;
+  const snapshot = { entities: [] };
+  Object.defineProperty(snapshot, "version", { enumerable: true, get() { called = true; return 1; } });
+  throwsCode(() => registry.prepareRestore(snapshot), "INVALID_METADATA");
+  equal(called, false);
 });
 
 test("invalid snapshots and duplicate snapshot IDs are rejected", () => {
