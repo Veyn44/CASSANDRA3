@@ -71,7 +71,7 @@ test("persistence round-trip restores entity identity and placement", async () =
   await persistence.save("integration-slot", { campaignId: "campaign:integration" });
   placements.removePlacement(id);
   entities.remove(id);
-  worlds.deactivate("world:cassandra");
+  worlds.deactivateWorld("world:cassandra");
   await persistence.load("integration-slot", { campaignId: "campaign:integration" });
   assert(entities.has(id));
   equal(placements.getPlacement(id).worldId, "world:cassandra");
@@ -106,9 +106,11 @@ test("restore preparation rejects a missing required world without partial commi
   const persistence = context.getService("core.persistence");
   const worlds = context.getService("core.world-registry");
   await persistence.save("restore-slot", { campaignId: "campaign:restore" });
-  worlds.close("world:cassandra");
+  worlds.prepareRestore({ version: 1, activeWorldId: null, worlds: [] }).commit();
   await rejects(() => persistence.load("restore-slot", { campaignId: "campaign:restore" }));
-  equal(worlds.get("world:cassandra").status, "closed");
+  equal(worlds.get("world:cassandra"), null);
+  assert(context.getService("core.entity-registry").has("entity:integration-pawn"));
+  equal(context.getService("core.world-context").getPlacement("entity:integration-pawn").worldId, "world:cassandra");
   await runtime.destroy();
 });
 
