@@ -30,7 +30,7 @@ Detail: `WHATWEHAVE_CORE_CONTEXT.md`.
 
 Detailní implementace: `src/core/system-bootstrap.js`, testy v `tests/lifecycle-bootstrap.test.js`.
 
-### Event Bus — implementováno, runtime neověřeno
+### Event Bus — implementováno, lokální Node.js ověření 17/17
 
 Detail: `WHATWEHAVE_CORE_EVENT_BUS.md`.
 
@@ -40,6 +40,7 @@ Detail: `WHATWEHAVE_CORE_EVENT_BUS.md`.
 - Události publikované během doručování se řadí na konec fronty.
 - Izolace chyb handlerů a limit proti nekonečnému řetězení.
 - Bez persistence, replay a command-bus odpovědnosti.
+- Browser a integrační ověření stále čeká.
 
 ### Game Clock & Simulation Scheduler — implementováno, lokální Node.js ověření
 
