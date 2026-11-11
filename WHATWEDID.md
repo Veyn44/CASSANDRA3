@@ -280,3 +280,24 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Ověření:** Testovací sada je připravena, ale runtime spuštění v této pracovní relaci neproběhlo. Implementace proto není označena jako runtime ověřená. Browser a integrační ověření čekají.
 
 **Větev:** `subfeature/core-architecture/entity-registry`, založena z `subfeature/core-architecture/persistence-logger`; nic nebylo sloučeno do `main`.
+
+
+## Implementace: World Registry — 2026-11-11
+
+**Východiska:** bod 6 World Context a hranice světů v `WHATTODO.md`; identita a jediné umístění entit; Entity Registry; Persistence participant contract.
+
+**Provedeno:**
+- Přidán `src/core/world-registry.js` pro identitu, popis a lifecycle skutečných mapových světů.
+- První verze podporuje Cassandra map world a encounter map worlds; Galaxy Data Context je výslovně vyloučen.
+- Každý world má vlastní stabilní worldId, rozměry a coordinate-system label. Core nepředpokládá pevnou velikost mapy.
+- Encounter world uchovává worldId, encounterId a dlouhodobou asteroid locationId; opakovaná návštěva lokality může mít nový encounter/world.
+- Aktivní může být nejvýše jeden mapový svět. Aktivace nového světa atomicky deaktivuje předchozí; bezpečný přechod může dočasně nemít aktivní svět.
+- Lifecycle: inactive / active / closed. Uzavřít lze pouze neaktivní encounter; closed ID zůstává rezervované.
+- Přidán Persistence participant `core.world-registry` (schemaVersion 1) s validací single-active-world invariantu a transakční obnovou prepare/commit/rollback.
+- Přidáno 26 automatických kontraktních scénářů a samostatný browser runner.
+
+**Hranice rozsahu:** World Registry nevlastní obsah map, entity ani jejich umístění, Galaxy System, input routing, rendering, pauzu, Scheduler, transakční world transition ani expedition lifecycle. Přechody a jejich vedlejší účinky bude později orchestravat vyšší World Context/transition coordinator.
+
+**Testování:** 26 scénářů je připraveno, ale runtime nebyl spuštěn. Browser a integrační ověření čekají.
+
+**Větev:** `subfeature/core-architecture/world-registry`, založena z `subfeature/core-architecture/entity-registry`; nic nebylo sloučeno do `main`.
