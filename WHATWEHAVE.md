@@ -14,9 +14,20 @@ Popis má být stručný, ale dostatečně vysvětlující, aby bylo jasné, co 
 
 ## Aktuální stav CASSANDRA3
 
-**Hratelná implementace:** zatím žádná.
+**Laboratorní implementace:** základní aréna je zapsaná v `main`; její běh v prohlížeči zatím nebyl v tomto pracovním prostředí ověřen.
 
-Repozitář CASSANDRA3 je nová čistá vývojová základna. Při založení tohoto dokumentu neobsahuje herní implementaci. Existující prototypy v jiných repozitářích nejsou automaticky součástí této hry a jejich funkce se sem zapíší teprve tehdy, až budou do CASSANDRA3 skutečně převzaty, upraveny a ověřeny.
+### Laboratorní aréna (první implementační sestava)
+
+- Statická top-down mapa 128×128 world units s mřížkou a hranicemi.
+- Hráčem ovládaný protagonista, přátelský Pawn Mira a statický nepřítel.
+- Několik typů terénních bloků s kolizí.
+- Pohyb WASD s normalizací diagonály, fyzický poloměr a základní kolize s terénem, hranicí mapy a ostatními Pawny.
+- Orientace protagonisty podle pozice myši.
+- Kamera se sledováním prostoru, ručním posunem prostředním/pravým tlačítkem a zoomem kolečkem.
+- Draft ON/OFF, Pause/Resume, rychlosti 1×/2×/3× a reset arény.
+- Vývojářské údaje: souřadnice protagonisty, FPS a zoom.
+
+**Omezení:** Mira a nepřítel jsou zatím statické testovací entity; neexistuje AI, boj, zdraví, inventář ani další herní systémy. Rychlost simulace v laboratoři násobí delta pohybu jako test ovládání; nejde o finální pravidlo encounteru, kde má být pohyb real-time a nezávislý na strategické rychlosti. Implementace je zapsána v `index.html`, `styles.css` a `src/`.
 
 ## Jak dokument udržovat
 
