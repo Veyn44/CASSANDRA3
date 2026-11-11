@@ -80,6 +80,16 @@ test("stored entity cannot be placed in a world before activation", () => {
   entities.store("encounter:encounter:a:body");
   throwsCode(() => context.placeEntity("encounter:encounter:a:body", "world:cassandra", { x: 2, y: 2 }), "ENTITY_STORED");
 });
+test("transfers an encounter entity from a world into Entity Store without changing its ID", () => {
+  const { entities, context } = setup();
+  entities.registerEncounter({ encounterId: "encounter:a", localId: "body", kind: "pawn" });
+  context.placeEntity("encounter:encounter:a:body", "world:encounter-a", { x: 4, y: 5 });
+  const moved = context.storeEntity("encounter:encounter:a:body", "campaign:entity-store");
+  equal(moved.previous.worldId, "world:encounter-a");
+  equal(moved.current.type, "store");
+  equal(entities.get("encounter:encounter:a:body").status, "stored");
+  equal(context.listPlacements().length, 1);
+});
 test("stored entity can be assigned to Entity Store placement", () => {
   const { entities, context } = setup();
   entities.registerEncounter({ encounterId: "encounter:a", localId: "body", kind: "pawn" });
