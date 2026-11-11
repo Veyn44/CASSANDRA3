@@ -3,39 +3,85 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="theme-color" content="#10151b">
-  <title>CASSANDRA3 — Laboratory Arena</title>
+  <meta name="theme-color" content="#091117">
+  <meta name="description" content="CASSANDRA3 — laboratory environment">
+  <title>CASSANDRA3 — Laboratory</title>
   <link rel="stylesheet" href="./styles.css">
 </head>
 <body>
   <main class="app">
     <header class="topbar">
-      <div><div class="eyebrow">CASSANDRA3 / DEVELOPMENT</div><h1>Laboratory Arena</h1></div>
-      <div class="status" id="status">RUNNING · 1×</div>
+      <a class="brand" href="./" aria-label="Cassandra home">
+        <span class="brand-mark">C</span>
+        <span class="brand-copy"><strong>CASSANDRA</strong><small>FIELD SYSTEMS · LABORATORY BUILD 0002</small></span>
+      </a>
+      <div class="session-status"><i class="status-led"></i><span>LOCAL SYSTEM</span><b>ASTEROID 01</b><span>DAY 001 · YEAR 2084</span></div>
+      <div class="clock-group"><span id="elapsed">00:00:00</span><button id="fullscreenButton" class="icon-button" title="Toggle fullscreen" aria-label="Toggle fullscreen">⛶</button></div>
     </header>
-    <section class="toolbar" aria-label="Simulation controls">
-      <button id="pauseButton" title="Space">Ⅱ Pause</button>
-      <div class="group" aria-label="Simulation speed">
-        <button class="speed active" data-speed="1">1×</button>
-        <button class="speed" data-speed="2">2×</button>
-        <button class="speed" data-speed="3">3×</button>
-      </div>
-      <button id="draftButton" class="toggle active">Draft: ON</button>
-      <button id="resetButton" class="subtle">↺ Reset arena</button>
-      <span class="hint">WASD move · mouse aim · wheel zoom · middle-drag pan</span>
+
+    <section class="workspace">
+      <aside class="side-panel left-panel">
+        <div class="panel-heading"><span>COMMAND</span><span class="live-tag"><i></i> LIVE</span></div>
+        <section class="unit-card">
+          <div class="unit-top">
+            <div class="pawn-token player-token">C</div>
+            <div class="unit-title"><strong>PROTAGONIST</strong><small>HUMAN · PLAYER CONTROLLED</small></div>
+            <span class="unit-state">ACTIVE</span>
+          </div>
+          <div class="stat-line"><span>HEALTH</span><b>100 / 100</b></div><div class="meter"><i style="width:100%"></i></div>
+          <div class="stat-line"><span>STAMINA</span><b>100 / 100</b></div><div class="meter stamina"><i style="width:100%"></i></div>
+          <div class="unit-footer"><span>LOCATION</span><b id="coordinates">X 24.0 · Y 24.0</b></div>
+        </section>
+
+        <section class="control-section">
+          <div class="section-label">MOVEMENT MODE</div>
+          <button id="draftButton" class="wide-control active"><span><i class="control-led"></i> DRAFT MODE</span><kbd>F</kbd></button>
+          <div class="section-label spaced">SIMULATION</div>
+          <div class="speed-control"><span>TIME SCALE</span><b id="speedLabel">1×</b></div>
+          <div class="speed-buttons">
+            <button class="speed active" data-speed="1">1×</button>
+            <button class="speed" data-speed="2">2×</button>
+            <button class="speed" data-speed="3">3×</button>
+          </div>
+          <button id="pauseButton" class="wide-control pause-control"><span><i class="pause-glyph">Ⅱ</i> PAUSE SIMULATION</span><kbd>SPACE</kbd></button>
+        </section>
+
+        <section class="location-card">
+          <div class="section-label">CURRENT LOCATION</div>
+          <strong>ASTEROID / SURFACE</strong>
+          <span>GRID 128 × 128 · LOCAL INSTANCE</span>
+        </section>
+        <div class="panel-bottom"><i class="status-led"></i> ALL SYSTEMS NOMINAL</div>
+      </aside>
+
+      <section class="map-column">
+        <div class="map-toolbar">
+          <div class="map-title"><span>LOCAL ENVIRONMENT</span><b>SECTOR 01 / SURFACE</b></div>
+          <div class="map-tools"><span id="cameraMode">CAMERA · LOCKED</span><button id="resetButton" title="Reset laboratory">↺</button><button id="gridButton" class="active" title="Toggle grid">GRID</button></div>
+        </div>
+        <div class="stage" id="stage">
+          <canvas id="arena" aria-label="Top-down laboratory arena"></canvas>
+          <div class="map-coordinates" id="mapCoordinates">X 24.0 · Y 24.0</div>
+          <div class="map-diagnostics" id="diagnostics">FPS -- · ZOOM 100%</div>
+          <div class="map-legend"><span><i class="legend-dot protagonist"></i> PROTAGONIST</span><span><i class="legend-dot friendly"></i> CREW</span><span><i class="legend-dot enemy"></i> UNKNOWN</span></div>
+          <div class="pause-overlay" id="pauseOverlay"><span>SIMULATION PAUSED</span></div>
+        </div>
+        <div class="map-footer"><span><i class="status-led"></i> LOCAL SIMULATION</span><span>WASD MOVE · WHEEL LOOK / ZOOM · F DRAFT · SPACE PAUSE</span></div>
+      </section>
+
+      <aside class="side-panel right-panel">
+        <div class="panel-heading"><span>ENVIRONMENT STATUS</span><span class="stable-tag">STABLE</span></div>
+        <section class="readout"><span>ATMOSPHERE</span><strong>NOT INITIALIZED</strong><small>— NO DATA</small></section>
+        <section class="readout"><span>POWER</span><strong>NOT INITIALIZED</strong><small>— NO DATA</small></section>
+        <section class="readout"><span>STRUCTURAL INTEGRITY</span><strong>100 <small>%</small></strong><div class="integrity-meter"><i></i></div></section>
+        <section class="nearby-section"><div class="section-label">NEARBY ENTITIES</div>
+          <div class="nearby-row"><span class="entity-icon crew-icon">●</span><span><b>MIRA</b><small>CREW · STANDBY</small></span><strong>01</strong></div>
+          <div class="nearby-row"><span class="entity-icon unknown-icon">◇</span><span><b>UNKNOWN</b><small>UNCONFIRMED CONTACT</small></span><strong>01</strong></div>
+        </section>
+        <section class="notes-section"><div class="section-label">LABORATORY NOTES</div><p>Movement and camera controls are being validated. Colony systems, crew autonomy and expedition operations will be integrated as independent systems.</p></section>
+        <div class="panel-bottom"><i class="status-led"></i> ENVIRONMENT NOMINAL</div>
+      </aside>
     </section>
-    <section class="stage">
-      <canvas id="arena" aria-label="Top-down laboratory arena"></canvas>
-      <div class="overlay top-left" id="coordinates">X 0.0 · Y 0.0</div>
-      <div class="overlay bottom-left" id="diagnostics">FPS --</div>
-      <div class="legend">
-        <span><i class="dot player"></i>Protagonist</span>
-        <span><i class="dot friend"></i>Mira</span>
-        <span><i class="dot enemy"></i>Enemy</span>
-        <span><i class="swatch"></i>Terrain</span>
-      </div>
-    </section>
-    <footer>Laboratory build · 128 × 128 world units · no combat or survival systems</footer>
   </main>
   <script type="module" src="./src/main.js"></script>
 </body>
