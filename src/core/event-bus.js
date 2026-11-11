@@ -1,5 +1,5 @@
 const ID_PATTERN = /^[a-z][a-z0-9.-]*$/;
-const TYPE_PATTERN = /^[a-z][a-z0-9-]*(?:\\.[a-z][a-z0-9-]*)+$/;
+const TYPE_PATTERN = /^[a-z][a-z0-9-]*(?:\.[a-z][a-z0-9-]*)+$/;
 let nextBusInstance = 1;
 
 export class EventBusError extends Error {
