@@ -234,3 +234,29 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Testování:** V Node.js 22 proběhlo 18 cílených runtime kontrol nad oběma moduly: 18/18 PASS. Browser runner obsahuje 21 automatických scénářů; jeho spuštění a integrace s celým Core čekají.
 
 **Stav:** Implementováno v `subfeature/core-architecture/clock-scheduler`; větev nebyla sloučena s rodičem ani s `main`.
+
+
+## Implementace: Persistence & Logger — 2026-11-11
+
+**Východiska:** body 7 a 8 v WHATTODO.md; hybridní Game Context; Event Bus očekává Logger.error(); Scheduler vlastní pouze strategický fixed-step čas. Persistence nesmí vlastnit doménová data ani ukládat události Event Busu jako event journal.
+
+**Logger:**
+- Přidán centrální Logger s úrovněmi DEBUG, INFO, WARN, ERROR a CRITICAL.
+- Záznamy mají diagnostický timestamp, source, category, message a strukturovaná metadata.
+- Historie je omezená kapacitou; starší záznamy se při naplnění odstraňují a jejich počet se eviduje.
+- Filtrování podle úrovně, kategorie a zdroje.
+- Selhání volitelného sinku nebo zdroje diagnostického času nepropaguje chybu do herního volání.
+
+**Persistence:**
+- Přidán koordinátor snapshotů s účastníky registrovanými pod stabilním ID a vlastní verzí schématu.
+- Snapshoty se validují a bezpečně kopírují; neplatná a ne-serializovatelná data se odmítnou.
+- Save/load vyžaduje explicitní runAtSafeBoundary callback. Persistence sama neodhaduje okamžik, kdy Scheduler dokončil krok a Event Bus vypořádal frontu.
+- Adapter musí poskytovat writeAtomic; MemorySaveAdapter slouží pouze jako jednoduchý testovací/raný adapter.
+- Načítání ověřuje formát kampaně a verze schémat; migraci provádí vlastník dat.
+- Obnova používá prepare/commit/rollback transakce. Všichni účastníci musí připravit obnovu před prvním commitem; při selhání se rollback provede v opačném pořadí.
+
+**Hranice rozsahu:** produkční browser/desktop úložiště, UI save slotů, autosave orchestrace po expedici, serializace konkrétních doménových systémů a přímé propojení safe boundary se Schedulerem/Event Busem zůstávají budoucí integrační prací. Žádné ukládání event historie se nepřidává.
+
+**Testy:** připraveno 14 asynchronních scénářů a samostatný browser runner. Runtime spuštění zatím neproběhlo; moduly proto nejsou označeny jako ověřené.
+
+**Větev:** subfeature/core-architecture/persistence-logger, založena z clock-scheduler; žádné sloučení do main.
