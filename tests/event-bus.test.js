@@ -150,5 +150,56 @@ export function runEventBusTests() {
     assert(event.sequence > 2 && bus.pendingCount === 0, "Bus should recover for a later independent drain.");
   });
 
+  test("does not consume sequence numbers for invalid payloads", () => {
+    const bus = new EventBus({ sources: ["pawn"] });
+    expectCode(() => bus.publish({ type: "pawn.hit", source: "pawn", payload: { nested: { value: undefined } } }), "INVALID_PAYLOAD");
+    assert(bus.sequence === 0, "Invalid payload must not consume a sequence.");
+    const valid = bus.publish({ type: "pawn.hit", source: "pawn" });
+    assert(valid.sequence === 1, "The next valid event must receive sequence 1.");
+  });
+
+  test("preserves an own __proto__ data key without changing the clone prototype", () => {
+    const bus = new EventBus({ sources: ["pawn"] });
+    const payload = {};
+    Object.defineProperty(payload, "__proto__", { value: { polluted: true }, enumerable: true, writable: true, configurable: true });
+    const event = bus.publish({ type: "pawn.data", source: "pawn", payload });
+    assert(Object.getPrototypeOf(event.payload) === Object.prototype, "Clone must keep the ordinary object prototype.");
+    assert(Object.hasOwn(event.payload, "__proto__"), "The data key must be preserved as an own property.");
+    assert(event.payload.__proto__.polluted === true, "The own data value must be preserved.");
+    assert({}.polluted === undefined, "Object.prototype must not be polluted.");
+  });
+
+  test("rejects accessors without invoking their getter", () => {
+    const bus = new EventBus({ sources: ["pawn"] });
+    let getterCalls = 0;
+    const payload = {};
+    Object.defineProperty(payload, "danger", { enumerable: true, get() { getterCalls++; return 1; } });
+    expectCode(() => bus.publish({ type: "pawn.data", source: "pawn", payload }), "INVALID_PAYLOAD");
+    assert(getterCalls === 0, "Payload validation must not execute getters.");
+    assert(bus.sequence === 0, "Rejected accessors must not consume sequence numbers.");
+  });
+
+  test("rejects symbol keys and hidden object properties", () => {
+    const bus = new EventBus({ sources: ["pawn"] });
+    const symbolPayload = { value: 1 };
+    symbolPayload[Symbol("hidden")] = 2;
+    expectCode(() => bus.publish({ type: "pawn.data", source: "pawn", payload: symbolPayload }), "INVALID_PAYLOAD");
+    const hiddenPayload = { value: 1 };
+    Object.defineProperty(hiddenPayload, "hidden", { value: 2, enumerable: false });
+    expectCode(() => bus.publish({ type: "pawn.data", source: "pawn", payload: hiddenPayload }), "INVALID_PAYLOAD");
+    assert(bus.sequence === 0, "Rejected properties must not consume sequence numbers.");
+  });
+
+  test("rejects sparse arrays and arrays with extra properties", () => {
+    const bus = new EventBus({ sources: ["pawn"] });
+    const sparse = [];
+    sparse.length = 1;
+    expectCode(() => bus.publish({ type: "pawn.data", source: "pawn", payload: { values: sparse } }), "INVALID_PAYLOAD");
+    const extra = [1];
+    extra.note = "unsupported";
+    expectCode(() => bus.publish({ type: "pawn.data", source: "pawn", payload: { values: extra } }), "INVALID_PAYLOAD");
+    assert(bus.sequence === 0, "Rejected arrays must not consume sequence numbers.");
+  });
+
   return results;
 }
