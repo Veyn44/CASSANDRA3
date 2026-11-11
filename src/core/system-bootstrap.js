@@ -112,8 +112,10 @@ export class SystemBootstrap {
     const paused = [];
     try {
       for (const system of [...this.#started].reverse()) {
-        if (system.pause) await system.pause(this.#context);
-        paused.push(system);
+        if (system.pause) {
+          await system.pause(this.#context);
+          paused.push(system);
+        }
       }
       this.#state = "paused";
     } catch (error) {
@@ -134,8 +136,10 @@ export class SystemBootstrap {
     const resumed = [];
     try {
       for (const system of this.#started) {
-        if (system.resume) await system.resume(this.#context);
-        resumed.push(system);
+        if (system.resume) {
+          await system.resume(this.#context);
+          resumed.push(system);
+        }
       }
       this.#state = "running";
     } catch (error) {
