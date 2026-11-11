@@ -39,7 +39,7 @@ Každá další implementace musí při svém dokončení doplnit:
 | Game Clock + Scheduler | `subfeature/core-architecture/clock-scheduler` | 21 | lokální Node 18 cílených kontrol PASS; browser sada 21 čeká | ČÁSTEČNĚ OVĚŘENO |
 | Persistence + Logger | `subfeature/core-architecture/persistence-logger` | 15 | testy připraveny; runtime spuštění čeká | PŘIPRAVENO |
 | Entity Registry | `subfeature/core-architecture/entity-registry` | 19 | testy připraveny; runtime spuštění čeká | PŘIPRAVENO |
-| World Registry | `subfeature/core-architecture/world-registry` | bude doplněno | implementace se připravuje | PŘIPRAVENO |
+| World Registry | `subfeature/core-architecture/world-registry` | 26 | testy a browser runner připraveny; runtime čeká | PŘIPRAVENO |
 
 **Poznámka k počtům:** počet scénářů vychází z aktuálního obsahu jednotlivých testovacích souborů, nikoli z úspěšného spuštění. U Clock/Scheduler je 21 browser scénářů a 18 samostatně doložených Node kontrol. U Persistence/Logger je 15 pojmenovaných scénářů (starší souhrnný dokument uváděl 14; registr používá počet odpovídající aktuálnímu testovacímu souboru).
 
@@ -229,7 +229,23 @@ Každá další implementace musí při svém dokončení doplnit:
 
 **Nesmí se stát:** dva současně aktivní světy, aktivní vstupy do neaktivního světa nebo záměna Galaxy Data Contextu za hratelnou mapu.
 
-**Stav:** připraveno k doplnění po implementaci.
+**Automatické:** 26 scénářů v `tests/world-registry.test.js`. Runner: `tests/world-registry.html`.
+
+### Automaticky ověřit
+- [ ] Spustit všech 26 scénářů; všechny musí projít.
+
+### Kritické chování
+- [ ] Cassandra má stabilní worldId; encounter má vlastní worldId, encounterId a asteroid locationId.
+- [ ] Opakovaná návštěva stejné locationId může mít nové encounterId/worldId.
+- [ ] Aktivace nového světa atomicky deaktivuje předchozí; nikdy nesmí být aktivní dva světy.
+- [ ] Deaktivace může ponechat registry bez aktivního světa během bezpečného přechodu.
+- [ ] Uzavřít lze pouze neaktivní encounter; uzavřené ID zůstává rezervované.
+- [ ] Rozměry a coordinateSystem patří konkrétnímu světu; žádná pevná velikost mapy v Core.
+- [ ] Snapshot/restore zachová activeWorldId a invariant jediného aktivního světa; rollback obnoví předchozí stav.
+
+**Nesmí se stát:** World Registry nesmí vlastnit mapová data, entity/placement, galaxii, input routing, rendering ani orchestraci přechodu.
+
+**Stav:** 26 scénářů připraveno; runtime spuštění čeká.
 
 ---
 
@@ -262,3 +278,4 @@ Každý potvrzený běh přidat jako nový řádek. Nevymazávat předchozí ne�
 ## Historie změn TESTING.md
 
 - 2026-11-11 — založen centrální registr na `main`; zpětně doplněny dostupné Core testovací sady a manuální kontroly laboratorní arény.
+- 2026-11-11 — doplněno 26 automatických scénářů World Registry a kritické kontroly jeho lifecycle/persistence.
