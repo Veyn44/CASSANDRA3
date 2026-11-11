@@ -65,10 +65,14 @@ export function runEventBusTests() {
     const bus = new EventBus({ sources: ["alpha", "beta", "gamma"] });
     const received = [];
     let removeBeta;
+    let gammaSubscribed = false;
     bus.subscribe("world.changed", "alpha", () => {
       received.push("alpha");
       removeBeta();
-      bus.subscribe("world.changed", "gamma", () => received.push("gamma"));
+      if (!gammaSubscribed) {
+        gammaSubscribed = true;
+        bus.subscribe("world.changed", "gamma", () => received.push("gamma"));
+      }
     });
     removeBeta = bus.subscribe("world.changed", "beta", () => received.push("beta"));
     bus.publish({ type: "world.changed", source: "alpha" });
