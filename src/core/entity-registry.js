@@ -114,6 +114,15 @@ function validateRecord(raw, index) {
   if (raw.scope === "persistent" && raw.encounterId !== null) {
     throw new EntityRegistryError("INVALID_SNAPSHOT", `Persistent entity "${id}" cannot retain an active encounterId.`, { id });
   }
+  if (raw.status === "stored" && raw.scope !== "persistent") {
+    throw new EntityRegistryError("INVALID_SNAPSHOT", `Stored entity "${id}" must have persistent scope.`, { id });
+  }
+  if (raw.originEncounterId !== null && raw.originEncounterId !== undefined) {
+    assertEntityId(raw.originEncounterId, "Origin encounter ID");
+  }
+  if (raw.scope === "encounter" && raw.originEncounterId !== null && raw.originEncounterId !== undefined && raw.originEncounterId !== raw.encounterId) {
+    throw new EntityRegistryError("INVALID_SNAPSHOT", `Encounter entity "${id}" has inconsistent origin metadata.`, { id });
+  }
   const metadata = cloneData(raw.metadata ?? {}, `entities[${index}].metadata`);
   return freezeRecord({
     id, kind, scope: raw.scope, encounterId: raw.encounterId,
@@ -338,11 +347,12 @@ export class EntityRegistry {
   }
 
   #parseSnapshot(snapshot) {
-    if (!snapshot || typeof snapshot !== "object" || Array.isArray(snapshot) || snapshot.version !== SNAPSHOT_VERSION || !Array.isArray(snapshot.entities)) {
+    const safeSnapshot = cloneData(snapshot, "snapshot");
+    if (!safeSnapshot || typeof safeSnapshot !== "object" || Array.isArray(safeSnapshot) || safeSnapshot.version !== SNAPSHOT_VERSION || !Array.isArray(safeSnapshot.entities)) {
       throw new EntityRegistryError("INVALID_SNAPSHOT", "Entity Registry snapshot has an unsupported version or shape.");
     }
     const next = new Map();
-    snapshot.entities.forEach((raw, index) => {
+    safeSnapshot.entities.forEach((raw, index) => {
       const record = validateRecord(raw, index);
       if (next.has(record.id)) throw new EntityRegistryError("DUPLICATE_ENTITY_ID", `Snapshot repeats entity ID "${record.id}".`, { id: record.id });
       next.set(record.id, record);
