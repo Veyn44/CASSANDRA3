@@ -1,6 +1,6 @@
 # WHATWEHAVE — Core / Event Bus
 
-> **Stav:** implementováno; runtime ověření čeká.
+> **Stav:** implementováno; statická regresní sada ověřena lokálně, browser runtime ověření čeká.
 > **Větev:** `subfeature/core-architecture/event-bus`
 > **Rodičovská větev:** `feature/core-architecture`
 
@@ -16,8 +16,12 @@
 - Doménově prefixované stabilní názvy typů, například `pawn.damaged`.
 - Obálka události obsahuje `id`, `type`, `version`, `source`, `sequence` a `payload`.
 - Monotónní pořadové číslo přiděluje Event Bus; timestamp ani druhý herní čas se nezavádí.
+- Sequence se spotřebuje až po úspěšné validaci, bezpečném zkopírování payloadu a vytvoření obálky. Neplatná událost pořadí neposune. Při vyčerpání bezpečného celočíselného rozsahu se publikování odmítne.
 - Zdroj i odběratel musí být mezi registrovanými ID předanými při vytvoření Event Busu.
-- Payload se při publikování odděleně zkopíruje a hluboce zmrazí; přijímány jsou pouze serializovatelné hodnoty, plain objekty a pole.
+- Payload se při publikování odděleně zkopíruje a hluboce zmrazí.
+- Payload přijímá pouze konečné číselné hodnoty, řetězce, booleany, null, hustá pole a plain objekty (včetně objektů s null prototypem).
+- Kopírování objektů používá definici vlastních datových vlastností, nikoli přiřazení; vlastní klíč `__proto__` proto nemůže změnit prototyp výsledného objektu.
+- Gettery/settery, symbolické klíče, skryté vlastnosti, řídká pole, dodatečné vlastnosti polí, neplain objekty, neserializovatelné hodnoty a cyklické reference jsou odmítnuty bez spotřebování sequence.
 - Doručování je synchronní a sekvenční.
 - Události publikované uvnitř handleru se zařadí na konec fronty; nevzniká vnořené doručování.
 - Odběry se vyhodnocují podle snapshotu vytvořeného při zahájení doručování dané události.
@@ -31,9 +35,9 @@
 
 ## Testovací scénáře
 
-`tests/event-bus.test.js` obsahuje 12 scénářů pro pořadí a synchronnost doručování, neměnnost payloadu, validaci, odběry, snapshot, vnořené publikování, izolaci chyb, sekvence, limit fronty a zotavení po limitu.
+`tests/event-bus.test.js` obsahuje 17 scénářů: původních 12 a 5 doplněných regresních scénářů pro sequence při neplatném payloadu, bezpečné zachování `__proto__`, odmítnutí getterů bez jejich spuštění, symbolické/skryté vlastnosti a řídká či rozšířená pole.
 
-Browser runner: `tests/event-bus.html`. Runtime ověření čeká; žádný výsledek testů zatím není označen jako prošlý.
+Statická sada byla spuštěna lokálně v Node.js 22: **17/17 prošlo**. Browser runner: `tests/event-bus.html`. Ověření v prohlížeči a integrační ověření v celé hře stále čeká; výsledek lokálního běhu není vydáván za browser runtime test.
 
 ## Integrační kontrakt
 
