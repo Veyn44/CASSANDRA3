@@ -13,6 +13,7 @@ export function createInput(canvas) {
     pointer.down = true;
     pointer.panning = event.button === 1 || event.button === 2;
     pointer.lastX = event.clientX; pointer.lastY = event.clientY;
+    pointer.clientX = event.clientX; pointer.clientY = event.clientY;
     canvas.setPointerCapture(event.pointerId);
   });
   canvas.addEventListener("pointerup", () => { pointer.down = false; pointer.panning = false; });
