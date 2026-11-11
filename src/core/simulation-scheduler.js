@@ -49,6 +49,7 @@ export class SimulationScheduler {
   #tick = 0;
   #warningActive = false;
   #overloadPaused = false;
+  #overloadArmed = true;
   #faulted = false;
   #advancing = false;
 
@@ -162,7 +163,7 @@ export class SimulationScheduler {
       if (realDeltaSeconds > 0) this.#enqueueTime(realDeltaSeconds);
       this.#updateWarningState();
 
-      if (this.#backlogSeconds >= this.#criticalBacklogSeconds) {
+      if (this.#overloadArmed && this.#backlogSeconds >= this.#criticalBacklogSeconds) {
         this.#triggerOverloadPause();
         return this.snapshot;
       }
@@ -292,6 +293,7 @@ export class SimulationScheduler {
       this.#emitDiagnostic("warning", { backlogSeconds: this.#backlogSeconds, tick: this.#tick });
     } else if (this.#warningActive && this.#backlogSeconds < this.#warningBacklogSeconds) {
       this.#warningActive = false;
+      this.#overloadArmed = true;
       this.#emitDiagnostic("cleared", { backlogSeconds: this.#backlogSeconds, tick: this.#tick });
     }
   }
@@ -299,6 +301,7 @@ export class SimulationScheduler {
   #triggerOverloadPause() {
     if (this.#overloadPaused) return;
     this.#overloadPaused = true;
+    this.#overloadArmed = false;
     this.#clock.pause("scheduler-overload");
     this.#emitDiagnostic("critical", { backlogSeconds: this.#backlogSeconds, tick: this.#tick });
   }
