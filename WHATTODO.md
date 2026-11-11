@@ -1,6 +1,6 @@
 # WHATTODO — CASSANDRA
 
-Pracovní plán dalšího vývoje. Tento dokument určuje pořadí a obsah nejbližších návrhových a implementačních kroků. Nejde o vývojový deník; historii skutečně provedených změn zapisujeme do `WAHTWEDID.md`.
+Pracovní plán dalšího vývoje. Tento dokument určuje pořadí a obsah nejbližších návrhových a implementačních kroků. Nejde o vývojový deník; historii skutečně provedených změn zapisujeme do `WHATWEDID.md`.
 
 Schválená identita hry, systémové hranice a pravidla práce jsou součástí návrhové dokumentace projektu. Samostatné referenční dokumenty budou v CASSANDRA3 doplněny, až bude jejich obsah připravený a sladěný s tímto plánem.
 
@@ -331,4 +331,4 @@ Po schválení návrhu implementovat Core po malých ověřitelných krocích. K
 - Po uzavření návrhového rozhodnutí aktualizovat příslušný bod a odstranit neplatné alternativy.
 - Při změně pořadí nebo rozsahu uvést důvod a dopad na návazné systémy.
 - Nová obecná pravidla práce zapisovat do `RULES.md`.
-- Provedené implementace a jejich skutečný stav zapisovat do `WAHTWEDID.md`; aktuálně existující funkce popisovat v `WHATWEHAVE.md`.
+- Provedené implementace a jejich skutečný stav zapisovat do `WHATWEDID.md`; aktuálně existující funkce popisovat v `WHATWEHAVE.md`.
