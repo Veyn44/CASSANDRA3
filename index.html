@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="cs">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#10151b">
+  <title>CASSANDRA3 — Laboratory Arena</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app">
+    <header class="topbar">
+      <div><div class="eyebrow">CASSANDRA3 / DEVELOPMENT</div><h1>Laboratory Arena</h1></div>
+      <div class="status" id="status">RUNNING · 1×</div>
+    </header>
+    <section class="toolbar" aria-label="Simulation controls">
+      <button id="pauseButton" title="Space">Ⅱ Pause</button>
+      <div class="group" aria-label="Simulation speed">
+        <button class="speed active" data-speed="1">1×</button>
+        <button class="speed" data-speed="2">2×</button>
+        <button class="speed" data-speed="3">3×</button>
+      </div>
+      <button id="draftButton" class="toggle active">Draft: ON</button>
+      <button id="resetButton" class="subtle">↺ Reset arena</button>
+      <span class="hint">WASD move · mouse aim · wheel zoom · middle-drag pan</span>
+    </section>
+    <section class="stage">
+      <canvas id="arena" aria-label="Top-down laboratory arena"></canvas>
+      <div class="overlay top-left" id="coordinates">X 0.0 · Y 0.0</div>
+      <div class="overlay bottom-left" id="diagnostics">FPS --</div>
+      <div class="legend">
+        <span><i class="dot player"></i>Protagonist</span>
+        <span><i class="dot friend"></i>Mira</span>
+        <span><i class="dot enemy"></i>Enemy</span>
+        <span><i class="swatch"></i>Terrain</span>
+      </div>
+    </section>
+    <footer>Laboratory build · 128 × 128 world units · no combat or survival systems</footer>
+  </main>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
