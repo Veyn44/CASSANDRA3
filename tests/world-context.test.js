@@ -163,7 +163,7 @@ function runAll() {
     catch (error) { lines.push(`FAIL ${item.name}: ${error.message}`); }
   }
   lines.push(`RESULT ${passed}/${tests.length} passed`);
-  if (typeof document !== "undefined") document.querySelector("#results").textContent = lines.join("\\n");
+  if (typeof document !== "undefined") document.querySelector("#results").textContent = lines.join("\n");
   if (passed !== tests.length) throw new Error(`World Context tests failed: ${passed}/${tests.length}`);
   return { passed, total: tests.length };
 }
