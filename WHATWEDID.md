@@ -174,3 +174,27 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Hranice odpovědnosti:** Event Bus oznamuje již nastalé skutečnosti. Neprovádí příkazy, neukládá historii, nepřehrává události a neparalelizuje handlery.
 
 **Stav:** Implementováno v `subfeature/core-architecture/event-bus`; runtime ověření čeká.
+
+
+## Dokončení a zpevnění EventBusu — 2026-11-11
+
+**Kontext:** Při následném auditu implementace bylo potřeba uzavřít několik hranic bezpečného datového kontraktu. Cílem nebylo měnit veřejné API ani rozšiřovat odpovědnost EventBusu, ale zajistit, aby neplatný payload nemohl narušit deterministické pořadí nebo bezpečnost kopírování.
+
+**Provedené změny:**
+
+- Payload se nyní kompletně validuje a kopíruje před spotřebováním pořadového čísla. Neplatná událost tedy nevytváří mezeru v sequence.
+- Pořadové číslo se navyšuje až po vytvoření kompletní neměnné obálky.
+- Ochrana odmítne publikování po dosažení `Number.MAX_SAFE_INTEGER`, aby se sequence nikdy tiše nepřestala přesně zvyšovat.
+- Kopírování objektů nepoužívá přiřazení do běžného objektu. Vlastní datový klíč `__proto__` se zachová jako běžná vlastní vlastnost a nemění prototyp výsledku.
+- Validace čte property descriptors, nikoliv hodnoty přes běžný přístup; gettery a settery se proto nespouštějí a jsou odmítnuty.
+- Symbolické a skryté vlastnosti jsou odmítnuty, aby kopie nezamlčela část vstupních dat.
+- Pole musí být hustá, používat standardní Array prototype a nesmějí obsahovat dodatečné vlastní vlastnosti.
+- Zachována podpora plain objektů s běžným i null prototypem; cyklické reference a neplain objekty zůstávají odmítnuty.
+
+**Testování:** Původních 12 scénářů zůstalo zachováno. Přidáno 5 regresních scénářů. Celá sada byla spuštěna lokálně v Node.js 22 a skončila výsledkem 17/17 PASS. To je statické/Node ověření testovacího modulu, nikoli browser runtime ani integrační test hry.
+
+**Proč toto řešení:** EventBus je sdílená infrastruktura. Jeho vstupní kontrakt musí být úzký a předvídatelný; nemá se snažit automaticky normalizovat libovolné JavaScript objekty. Explicitní odmítnutí nejednoznačných dat je bezpečnější než tichá ztráta vlastností nebo spuštění cizího getteru během publikování.
+
+**Dopad na veřejný kontrakt:** Žádná změna signatury `publish`, `subscribe` ani tvaru event envelope. Zpřísnila se pouze validace payloadu v souladu s již deklarovaným požadavkem na serializovatelná data a hlubokou neměnnost.
+
+**Stav:** Implementováno v `subfeature/core-architecture/event-bus`; lokální testovací sada 17/17 PASS; browser a integrační ověření čeká. Větev nebyla sloučena s rodičem ani s `main`.
