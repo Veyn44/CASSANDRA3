@@ -31,7 +31,8 @@ The proposed 16×16 hierarchy (sectors, regions, star systems, planets and aster
 - `new WorldContext({ entityRegistry, worldRegistry })`
 - `getPlacement(entityId)`, `listPlacements(filters?)`
 - `placeEntity(entityId, worldId, position)`
-- `placeInStore(entityId, storeId)`
+- `storeEntity(entityId, storeId)` — atomicky převede encounter entitu z mapy do Entity Store a zachová její ID.
+- `placeInStore(entityId, storeId)` — umístí již uloženou entitu do Entity Store.
 - `moveEntity(entityId, { type: "world", worldId, position } | { type: "store", storeId })`
 - `removePlacement(entityId)`
 - `captureSnapshot()`, `prepareRestore(snapshot)`
