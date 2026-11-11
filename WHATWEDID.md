@@ -260,3 +260,23 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Testy:** připraveno 14 asynchronních scénářů a samostatný browser runner. Runtime spuštění zatím neproběhlo; moduly proto nejsou označeny jako ověřené.
 
 **Větev:** subfeature/core-architecture/persistence-logger, založena z clock-scheduler; žádné sloučení do main.
+
+
+## Implementace: Entity Registry — 2026-11-11
+
+**Východiska:** bod 5 Entity Registry a identity entit v WHATTODO.md; pravidla jediného umístění, stabilních ID, encounter-scoped entit a explicitního Entity Store; existující Persistence participant contract.
+
+**Provedeno:**
+- Přidán `src/core/entity-registry.js` pro registraci persistentních a encounter-scoped identit.
+- Persistentní ID používají UUID zdroj s možností injektovat ID factory; encounter ID jsou namespacovaná podle encounteru a lokálního ID.
+- Registry eviduje stavy active/stored/removed. Odstranění vytváří tombstone, takže ID nelze znovu použít.
+- Explicitní `store(id)` převádí encounter identitu do persistentního Entity Store. Registry nepřebírá skutečný doménový stav entity.
+- Metadata se bezpečně kopírují a hluboce zmrazují; gettery, symboly, skryté vlastnosti, řídká pole, cykly a neplain data jsou odmítnuty.
+- Přidán Persistence participant `core.entity-registry` (schemaVersion 1) s validací snapshotu a transakční obnovou prepare/commit/rollback.
+- Přidána samostatná sada kontraktních testů a browser runner.
+
+**Hranice odpovědnosti:** Entity Registry neurčuje World placement, vlastnictví Pawna/předmětu, skutečný obsah Entity Store, pravidla smrti ani automatické čištění encounteru. Tyto oblasti zůstávají příslušným systémům. Stav `active` označuje evidovanou identitu, nikoliv aktivní instanci v konkrétním světě.
+
+**Ověření:** Testovací sada je připravena, ale runtime spuštění v této pracovní relaci neproběhlo. Implementace proto není označena jako runtime ověřená. Browser a integrační ověření čekají.
+
+**Větev:** `subfeature/core-architecture/entity-registry`, založena z `subfeature/core-architecture/persistence-logger`; nic nebylo sloučeno do `main`.
