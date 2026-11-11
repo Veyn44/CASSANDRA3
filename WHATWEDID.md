@@ -1,4 +1,4 @@
-# WAHTWEDID — CASSANDRA3
+# WHATWEDID — CASSANDRA3
 
 ## Účel dokumentu
 
@@ -106,3 +106,17 @@ Každý významný záznam má obsahovat:
 - **Stav** — schváleno, změněno, nahrazeno nebo zrušeno.
 
 Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou jen proto, že se směr později změnil; označí se jako nahrazené a vysvětlí se proč.
+
+## Rozhodnutí: nejprve laboratorní aréna
+
+**Rozhodnutí:** Prvním skutečným základem CASSANDRA3 bude malá funkční top-down aréna, nikoli okamžitá implementace rozsáhlého Game Core a všech herních systémů.
+
+**Důvod:** Potřebujeme společné, spustitelné prostředí, ve kterém lze jednotlivé systémy vyvíjet a ověřovat na reálném pohybu, Pawn entitách, kolizích a terénu. Příliš brzká abstrakce bez běžící hry by vedla k navrhování infrastruktury naslepo a zbytečně by prodlužovala cestu k prvním ověřitelným výsledkům.
+
+**Rozsah:** Aréna 128×128, protagonista, Mira jako friendly Pawn, jeden statický nepřítel, několik kolizních bloků terénu, základní movement, Draft/Autonomous, Pause, rychlost simulace, kamera a jednoduché vývojářské pomůcky.
+
+**Co vědomě odmítáme:** Přidávat do laboratoře všechny systémy z WHATTODO jen proto, že jsou součástí budoucí hry. Laboratoř není vertikální slice ani první verze gameplaye. Je to malý společný testovací prostor.
+
+**Herní a vývojový dopad:** Každá budoucí feature větev může vycházet ze stejného funkčního základu a být samostatně testována. Základní ovládání a fyzické chování lze ladit dříve, než na ně navážou složitější systémy.
+
+**Stav:** Schváleno.
