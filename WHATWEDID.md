@@ -120,3 +120,18 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Herní a vývojový dopad:** Každá budoucí feature větev může vycházet ze stejného funkčního základu a být samostatně testována. Základní ovládání a fyzické chování lze ladit dříve, než na ně navážou složitější systémy.
 
 **Stav:** Schváleno.
+
+
+## Rozhodnutí a implementace: první laboratorní aréna v main
+
+**Rozhodnutí:** Laboratorní základ jsme začali realizovat jako malou statickou webovou arénu bez frameworku a bez předčasného Game Core.
+
+**Provedená implementace:** Přidány `index.html`, `styles.css`, `src/arena.js`, `src/input.js` a `src/main.js`. Obsahují mapu 128×128, tři Pawn role (protagonista, Mira, statický nepřítel), kolizní terén, pohyb WASD, normalizaci diagonály, kolize, míření podle myši, kameru, Draft, Pause, rychlosti a reset. Doplněny souřadnice, FPS a zoom diagnostika. Opraveno omezení kamery pro široké viewporty.
+
+**Důvod:** Nejprve potřebujeme běžící prostor pro ověřování pohybu, fyzických rozměrů, Pawnů a vstupu. Modulární rozdělení do několika malých souborů zachovává čitelnost bez zavádění obecného frameworku.
+
+**Omezení a otevřený krok:** V tomto prostředí se nepodařilo spustit browserovou ani lokální runtime kontrolu (přístup k GitHubu z lokálního shellu nebyl dostupný). Kód je uložen v main, ale aréna se zatím nesmí označit za runtime ověřenou. Před vytvořením feature větví je nutné otevřít ji v prohlížeči, ověřit ovládání/kolize/pauzu/rychlosti/reset a opravit případné chyby.
+
+**Dočasné laboratorní chování:** Rychlosti 1×/2×/3× násobí delta pohybu v aréně, protože laboratoř ověřuje společné ovládací prvky. Toto chování nepřebíjí schválené pravidlo WHATTODO/WHATWEDID: v ostrém encounteru bude pohyb probíhat v reálném čase a nebude násoben strategickou rychlostí.
+
+**Stav:** Implementace zapsána do main; runtime ověření čeká.
