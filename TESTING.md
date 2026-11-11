@@ -143,11 +143,11 @@ Každá další implementace musí při svém dokončení doplnit:
 ## 5. Game Clock + Simulation Scheduler
 
 **Větev:** `subfeature/core-architecture/clock-scheduler`  
-**Automatické:** 21 scénářů v `tests/clock-scheduler.test.js`.  
+**Automatické:** 22 scénářů v `tests/clock-scheduler.test.js`.  
 **Runner:** `tests/clock-scheduler.html`.
 
 ### Automaticky ověřit
-- [ ] Spustit všech 21 scénářů; všechny musí projít.
+- [ ] Spustit všech 22 scénářů; všechny musí projít.
 
 ### Kritické chování
 - [ ] Jeden strategický den odpovídá 12 reálným minutám při 1×.
@@ -161,7 +161,7 @@ Každá další implementace musí při svém dokončení doplnit:
 
 **Nesmí se stát:** žádný druhý strategický Clock pro encounter; strategická rychlost nesmí násobit real-time pohyb v encounteru.
 
-**Stav:** 18 cílených Node kontrol PASS; browser runner 21 scénářů čeká; integrace čeká.
+**Stav:** 18 cílených Node kontrol PASS; browser runner 22 scénářů čeká; integrace čeká.
 
 ---
 
@@ -271,8 +271,8 @@ Každý potvrzený běh přidat jako nový řádek. Nevymazávat předchozí ne�
 
 ## 9. World Context
 
-- **Automatická sada:** 21 kontraktních scénářů v `tests/world-context.test.js`.
+- **Automatická sada:** 22 kontraktních scénářů v `tests/world-context.test.js`.
 - **Spuštění:** otevřít `tests/world-context.html` a stisknout „Run all World Context tests“.
 - **Pokrývá:** umístění entity, validaci světa a souřadnic, jediný placement, přesun bez změny ID, rollback při neplatném cíli, encounter scope, Entity Store lifecycle, immutable records a Persistence prepare/commit/rollback.
 - **Zakázané chování:** duplicitní placement; umístění odstraněné entity; encounter entity v jiném encounteru; placement mimo rozměry světa; ztráta původního placementu při neúspěšném přesunu; změna identity při přesunu.
-- **Stav:** PŘIPRAVENO — 21 scénářů existuje; runtime/browser běh čeká.
+- **Stav:** PŘIPRAVENO — 22 scénářů existuje; runtime/browser běh čeká.
