@@ -143,7 +143,7 @@ Každá další implementace musí při svém dokončení doplnit:
 ## 5. Game Clock + Simulation Scheduler
 
 **Větev:** `subfeature/core-architecture/clock-scheduler`  
-**Automatické:** 22 scénářů v `tests/clock-scheduler.test.js`.  
+**Automatické:** 23 scénářů v `tests/clock-scheduler.test.js`.  
 **Runner:** `tests/clock-scheduler.html`.
 
 ### Automaticky ověřit
@@ -271,7 +271,7 @@ Každý potvrzený běh přidat jako nový řádek. Nevymazávat předchozí ne�
 
 ## 9. World Context
 
-- **Automatická sada:** 22 kontraktních scénářů v `tests/world-context.test.js`.
+- **Automatická sada:** 23 kontraktních scénářů v `tests/world-context.test.js`.
 - **Spuštění:** otevřít `tests/world-context.html` a stisknout „Run all World Context tests“.
 - **Pokrývá:** umístění entity, validaci světa a souřadnic, jediný placement, přesun bez změny ID, rollback při neplatném cíli, encounter scope, Entity Store lifecycle, immutable records a Persistence prepare/commit/rollback.
 - **Zakázané chování:** duplicitní placement; umístění odstraněné entity; encounter entity v jiném encounteru; placement mimo rozměry světa; ztráta původního placementu při neúspěšném přesunu; změna identity při přesunu.
