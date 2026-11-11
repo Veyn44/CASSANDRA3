@@ -484,6 +484,49 @@ Toto je pracovní rozpad podle oblastí a odpovědností v WHATTODO. Hlavní fea
 - Do main se přenáší pouze dokončený a ověřený celek po kontrole závislostí a dokumentace.
 - Názvy a pořadí podvětví jsou návrh pracovního členění, nikoli závazek implementovat všechny kroky beze změny. Před každým větším systémem se ověří skutečné závislosti.
 
+## Aktuální stav připravených větví a dokumentace
+
+Byly vytvořeny tyto rodičovské větve z tehdejšího stavu `main`:
+- `feature/core-architecture`
+- `feature/pawn-life`
+- `feature/colony-construction`
+- `feature/environment-systems`
+- `feature/ship-systems`
+- `feature/resources-industry`
+- `feature/colony-automation`
+- `feature/expedition-gameplay`
+- `feature/combat-damage`
+- `feature/mining-exploration`
+- `feature/galaxy-world`
+- `feature/navigation-vehicles`
+- `integration/gameplay-test`
+
+V každé rodičovské větvi je samostatný doménový přehled `WHATWEHAVE_<DOMAIN>.md`. Tyto soubory zatím evidují, že doménová implementace nezačala; popisují vlastnictví, závislosti a navržené podkroky. Nejsou důkazem hotových funkcí.
+
+První implementační podvětev Core je založena jako `subfeature/core-architecture/context-registry`. Podvětve používají prefix `subfeature/`, protože Git ref nemůže současně existovat jako větev `feature/core-architecture` a jako její adresářová podvětev `feature/core-architecture/...`. Další podvětve se budou zakládat postupně podle pořadí a návazností, ne všechny najednou z jednoho zastaralého bodu.
+
+### Pravidla pro samostatné ověřování podvětví
+
+- Každá podvětev představuje jeden malý, samostatně spustitelný a ověřitelný implementační krok.
+- Pokud krok přidává UI nebo herní chování, připraví se samostatná testovací stránka/scénář, aby šel ověřit bez nutnosti dokončit celou rodičovskou oblast.
+- Testovací stránka je pouze testovací vstup; nesmí vytvářet alternativní produkční implementaci ani duplikovat logiku systému.
+- Každá podvětev má vlastní stručný WHATWEHAVE dokument nebo jasně oddělenou sekci. Po dokončení se skutečný stav přenese do doménového `WHATWEHAVE_<DOMAIN>.md`.
+- Podvětev se slučuje do rodičovské feature větve až po ověření. Neověřená práce zůstává oddělená.
+- Rodičovský WHATWEHAVE popisuje pouze to, co je skutečně přítomné v rodičovské větvi. Plánované podkroky jsou oddělené a označené jako plán.
+- Testování uživatelem a technická kontrola asistenta jsou dvě samostatné evidence. Funkce dostane stav **ověřená** až po obou potřebných kontrolách; zaznamená se, kdo/co a jak ji ověřil.
+
+### Pravidla konzistence mezi WHATWEHAVE
+
+Při každém dokončeném podkroku se kontrolují nejen soubory dané větve, ale také jeho veřejné kontrakty vůči ostatním doménám.
+
+1. **Vlastník dat:** každá entita a datová oblast má jednoho vlastníka. Ostatní systémy používají její veřejné API/kontrakt a nevytvářejí paralelní kopie pravdy.
+2. **Identifikátory a schémata:** ID, enumy, jednotky, názvy stavů a povinná pole musí mít stejný význam ve všech navázaných WHATWEHAVE.
+3. **Závislosti:** každá doména uvádí, co poskytuje a co vyžaduje. Změna kontraktu vyvolá kontrolu všech přímých konzumentů.
+4. **Čas a souřadnice:** časové jednotky, world units, mřížka, rychlosti a pravidla real-time/strategického času se nesmějí lokálně reinterpretovat.
+5. **Životní cyklus a persistence:** vznik, změna vlastníka, přechod mezi světy, uložení a odstranění entity musí mít jeden konzistentní model.
+6. **Rozpor se neřeší tichým přepsáním:** pokud si dokumenty odporují, označíme konflikt, určíme vlastníka rozhodnutí a opravíme dotčené dokumenty i kontrakty.
+7. **Pravidelný audit:** před každou integrací do `integration/gameplay-test` a před každým přenosem do `main` se provede kontrola relevantních WHATWEHAVE napříč závislými oblastmi.
+
 ## Pravidla průběžné aktualizace tohoto plánu
 
 - Tento dokument obsahuje aktuální plán a otevřené návrhové úkoly, ne historii commitů.
