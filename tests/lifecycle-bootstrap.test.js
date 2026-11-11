@@ -23,10 +23,9 @@ export async function runLifecycleBootstrapTests() {
 
   await test("validates declarations before calling lifecycle hooks", async () => {
     let initialized = false;
-    const bootstrap = new SystemBootstrap({ systems: [
+    await expectCode(() => new SystemBootstrap({ systems: [
       { id: "consumer", requires: ["missing.api"], initialize() { initialized = true; } }
-    ] }).start();
-    await expectCode(() => bootstrap, "MISSING_REQUIRED_SERVICE");
+    ] }), "MISSING_REQUIRED_SERVICE");
     assert(!initialized, "No system may initialize before registry validation.");
   });
 
