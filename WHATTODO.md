@@ -6,9 +6,9 @@ Schválená identita hry, systémové hranice a pravidla práce jsou součástí
 
 ## Hlavní strategie vývoje
 
-Nejdříve vytvoříme společné technické jádro a minimální integrační kostru všech hlavních herních systémů. Teprve když budou systémy používat společné datové modely a rozhraní a budou schopné spolu komunikovat, začneme je jednotlivě rozvíjet do plnohodnotné podoby.
+Nejdříve vytvoříme malou funkční laboratorní arénu. Jejím účelem je poskytnout stabilní společný podklad pro samostatný vývoj a testování systémů. Teprve na tomto ověřeném základu vzniknou feature větve; rozsáhlé Game Core a další herní systémy budeme rozvíjet postupně podle skutečné potřeby.
 
-Cílem není mít v `main` dvanáct rozpracovaných herních implementací. Cílem je mít v `main` stabilní společný základ, jasné kontrakty a minimální kostru všech systémů, která umožní jejich bezpečnou spolupráci.
+Cílem `main` je jednoduchá, spustitelná a stabilní laboratoř. Není to hotová hra ani předčasná implementace všech systémů. Každá feature větev vznikne z aktuálního `main`, zachová si tento společný základ a bude rozvíjet jednu jasně vymezenou oblast.
 
 ### Zásady
 
@@ -309,21 +309,58 @@ Jakmile bude společný základ a kostra ověřená, budeme jednotlivé feature 
 
 ---
 
-## První konkrétní pracovní úkol
+## První konkrétní pracovní úkol — laboratorní aréna
 
-Začínáme pouze návrhem **Game Core** ve větvi `feature/core-architecture`.
+Nejdříve vytvořit v `main` malou funkční arénu, která bude společným podkladem pro další vývoj.
 
-Nejdříve podrobně navrhnout a společně schválit body 1.1 až 1.9. Neimplementovat je všechny najednou. Návrh rozdělit na malé části, u každé určit:
+### Rozsah laboratoře
 
-- odpovědnost a hranice,
-- vlastněná data,
-- veřejné API a datové kontrakty,
-- závislosti na ostatních částech Core,
-- chybové a okrajové stavy,
-- způsob automatického ověření,
-- návaznost na existující prototyp.
+- Jedna jednoduchá top-down aréna o výchozí velikosti **128×128 world units**. Rozměr je počáteční nastavení, nikoli pevný limit architektury.
+- Jeden hráčem ovládaný protagonista.
+- Jeden přátelský Pawn jménem **Mira** jako test autonomního/friendly chování.
+- Jeden statický nepřátelský Pawn jako testovací cíl; bez AI a bez bojových mechanik.
+- Několik jednoduchých typů terénních bloků, které lze umístit do arény a které mají skutečnou kolizi. Slouží jako podklad pro pozdější konstrukční, environmentální a další herní prvky.
+- Pohyb protagonisty pomocí WASD, včetně normalizace diagonálního pohybu.
+- Fyzický poloměr Pawna a základní kolize s terénem a ostatními Pawn entitami.
+- Orientace Pawna a směr míření podle pozice myši, pokud to stávající jednoduchá implementace umožní bez přidání bojového systému.
+- Kamera sledující protagonistu, s jednoduchým ručním posunem a zoomem.
+- Režim Draft/Autonomous pro protagonistu.
+- Pause a ovládání rychlosti simulace.
+- Jednoduchý reset arény do výchozího stavu.
+- Základní vývojářské zobrazení: mřížka/souřadnice, pozice Pawna a FPS.
 
-Po schválení návrhu implementovat Core po malých ověřitelných krocích. Každý krok kontrolovat proti schváleným rozhodnutím v tomto plánu a aktuálním pravidlům projektu.
+### Co do laboratoře záměrně nepatří
+
+Žádná galaxie, Cassandra jako základnová simulace, shuttle, expedice, inventář, vybavení, zdraví, zbraně, damage, loot, těžba, atmosféra, konstrukční systém, ekonomika, kalendář, ukládání kampaně ani pokročilá AI. Tyto systémy zůstanou v plánu, ale nesmějí nafouknout laboratorní základ.
+
+### Technické zásady
+
+- Použít jednoduchou strukturu, kterou lze snadno spustit a rozšířit.
+- Oddělit alespoň vstup, pohyb/kolize a vykreslování tak, aby se později daly bezpečně nahradit nebo rozšířit.
+- Nepředstírat obecný framework ani předčasně zavádět abstrakce bez reálného využití.
+- Inspirovat se v CASSANDRA-NEW pouze u konkrétních ověřených prvků ovládání a chování. Kód nepřebírat plošně; každou převzatou část posoudit v kontextu CASSANDRA3.
+- Číselné hodnoty pohybu, kamery a ovládání jsou výchozí laboratorní nastavení, ne finální balance.
+- Ověřit, že aréna funguje v prohlížeči a lze ji používat jako společný testovací podklad.
+
+### Feature větve po dokončení laboratoře
+
+Po dokončení a ověření laboratorního základu vytvořit samostatné feature větve. Každá větev musí vycházet z aktuálního `main`, který obsahuje laboratorní arénu. Zdrojové větve se vyvíjejí samostatně a jejich kombinace se budou zkoušet v integrační větvi; žádná feature větev se kvůli testování nepřepisuje.
+
+První kandidáti na samostatné větve:
+1. `feature/core-architecture`
+2. `feature/pawn-life`
+3. `feature/colony-construction`
+4. `feature/environment-systems`
+5. `feature/ship-systems`
+6. `feature/resources-industry`
+7. `feature/colony-automation`
+8. `feature/expedition-gameplay`
+9. `feature/combat-damage`
+10. `feature/mining-exploration`
+11. `feature/galaxy-world`
+12. `feature/navigation-vehicles`
+
+Větve vytvořit až z dokončeného laboratorního `main`, nikoli nyní z prázdného základu. Konkrétní pořadí a závislosti se mohou upravit podle zkušeností z prvních implementací.
 
 ## Pravidla průběžné aktualizace tohoto plánu
 
