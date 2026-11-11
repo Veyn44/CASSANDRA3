@@ -230,7 +230,7 @@ test("asynchronous demo update is rejected before publishing a successful simula
   const scheduler = context.getService("core.scheduler");
   const demo = context.getService("core.demo-api");
   let publishedSteps = 0;
-  context.getService("core.event-bus").subscribe("core.simulation-step", "core.integration-test", () => { publishedSteps += 1; });
+  context.getService("core.event-bus").subscribe("core.simulation-step", "core.scheduler", () => { publishedSteps += 1; });
   let error = null;
   try { scheduler.advance(6); } catch (caught) { error = caught; }
   assert(error, "Asynchronous demo update was not rejected");
