@@ -198,3 +198,39 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Dopad na veřejný kontrakt:** Žádná změna signatury `publish`, `subscribe` ani tvaru event envelope. Zpřísnila se pouze validace payloadu v souladu s již deklarovaným požadavkem na serializovatelná data a hlubokou neměnnost.
 
 **Stav:** Implementováno v `subfeature/core-architecture/event-bus`; lokální testovací sada 17/17 PASS; browser a integrační ověření čeká. Větev nebyla sloučena s rodičem ani s `main`.
+
+
+## Implementace: Game Clock & Simulation Scheduler — 2026-11-11
+
+**Rozhodnutí:** Strategický čas Cassandry vlastní jediný Game Clock. Samostatný Simulation Scheduler řídí pevné kroky a pořadí aktualizací. Encounter nedostává druhý strategický Clock.
+
+**Game Clock:**
+- Jeden strategický den (86 400 strategických sekund) trvá 720 reálných sekund při 1×.
+- Podporovaný rozsah rychlosti je 0,25× až 3×; UI presety 1×/2×/3× zůstávají beze změny.
+- Pauza používá nezávislé důvody. Ruční pauza, nouzové přetížení a technická chyba se navzájem nepřepisují.
+- Strategický čas se commitne až po úspěšném dokončení fixed-step aktualizace. Clock neobsahuje vlastní timer ani kalendář.
+
+**Simulation Scheduler:**
+- Výchozí fixed step je 6 strategických sekund, tedy 20 kroků za reálnou sekundu při 1× a 60 při 3×.
+- Systémy se spouštějí v pořadí dodaném z validovaného System Registry/Bootstrap; Scheduler nevytváří druhý graf závislostí.
+- Frekvence systémů se nastavuje celočíselným počtem ticků.
+- Scheduler zachovává zbytek akumulovaného času a omezuje počet kroků na jedno volání. Čas se nezahazuje.
+- Každý krok předává strategický delta, odpovídající reálný delta, pořadové číslo ticku a čas na konci kroku.
+- Časové úseky zachovávají rychlost, která platila při jejich přijetí. Změna rychlosti nepřepočítá již vzniklý backlog.
+- Update callbacky jsou synchronní; asynchronní a reentrantní aktualizace se odmítají.
+- Chyba během simulačního kroku způsobí faulted stav a nouzovou technickou pauzu. Neúspěšný krok se necommitne a automaticky se neopakuje, protože mohl částečně změnit stav systému.
+
+**Přetížení:**
+- Výchozí varovný backlog je 120 strategických sekund, kritický backlog 600 strategických sekund.
+- Kritický práh přidá Clocku pause reason `scheduler-overload` a zachová celý backlog.
+- Obsluha musí nouzový stav explicitně potvrdit. Potvrzení odebere pouze overload pause; nezruší jiné důvody pauzy.
+- Po potvrzení se backlog dohání po omezených dávkách. Ochrana se znovu aktivuje až po návratu pod varovný práh a následném novém nárůstu.
+- Diagnostika je zpřístupněna callbackem; napojení na herní UI a detailní monitoring Event Bus fronty zůstávají integračním úkolem.
+
+**Proč toto řešení:** Pevné strategické kroky oddělují herní výpočty od nepravidelného FPS. Zachování původního poměru času při změně rychlosti brání tomu, aby už akumulovaný čas byl zpětně přepočítán. Pauza s více důvody brání tomu, aby UI nechtěně zrušilo nouzové nebo lifecycle pozastavení. Strategický čas se nezvyšuje předčasně, když simulační krok ještě nebyl dokončen.
+
+**Hranice rozsahu:** Kalendář, encounter real-time update pipeline, persistence času, paralelní worker pool a UI diagnostika nejsou součástí této implementace. Encounter nepoužívá druhý strategický Clock; při jeho aktivaci bude strategický Clock Cassandry pozastaven.
+
+**Testování:** V Node.js 22 proběhlo 18 cílených runtime kontrol nad oběma moduly: 18/18 PASS. Browser runner obsahuje 21 automatických scénářů; jeho spuštění a integrace s celým Core čekají.
+
+**Stav:** Implementováno v `subfeature/core-architecture/clock-scheduler`; větev nebyla sloučena s rodičem ani s `main`.
