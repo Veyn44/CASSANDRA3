@@ -40,6 +40,8 @@ Každá další implementace musí při svém dokončení doplnit:
 | Persistence + Logger | `subfeature/core-architecture/persistence-logger` | 15 | testy připraveny; runtime spuštění čeká | PŘIPRAVENO |
 | Entity Registry | `subfeature/core-architecture/entity-registry` | 19 | testy připraveny; runtime spuštění čeká | PŘIPRAVENO |
 | World Registry | `subfeature/core-architecture/world-registry` | 26 | testy a browser runner připraveny; runtime čeká | PŘIPRAVENO |
+| World Context | `subfeature/core-architecture/world-context` | 23 | testy a browser runner připraveny; runtime čeká | PŘIPRAVENO |
+| Core Integration Contracts | `subfeature/core-architecture/integration-contracts` | 10 | end-to-end runner připraven; runtime čeká | PŘIPRAVENO |
 
 **Poznámka k počtům:** počet scénářů vychází z aktuálního obsahu jednotlivých testovacích souborů, nikoli z úspěšného spuštění. U Clock/Scheduler je 21 browser scénářů a 18 samostatně doložených Node kontrol. U Persistence/Logger je 15 pojmenovaných scénářů (starší souhrnný dokument uváděl 14; registr používá počet odpovídající aktuálnímu testovacímu souboru).
 
@@ -237,7 +239,7 @@ Každá další implementace musí při svém dokončení doplnit:
 
 ---
 
-## 9. Integrační a hráčské testy Core — čekají na propojení
+## 10. Integrační a hráčské testy Core — čekají na propojení
 
 Tyto kontroly se spustí až poté, co budou jednotlivé Core větve dostupné v jedné integrační sestavě.
 
@@ -276,3 +278,13 @@ Každý potvrzený běh přidat jako nový řádek. Nevymazávat předchozí ne�
 - **Pokrývá:** umístění entity, validaci světa a souřadnic, jediný placement, přesun bez změny ID, rollback při neplatném cíli, encounter scope, Entity Store lifecycle, immutable records a Persistence prepare/commit/rollback.
 - **Zakázané chování:** duplicitní placement; umístění odstraněné entity; encounter entity v jiném encounteru; placement mimo rozměry světa; ztráta původního placementu při neúspěšném přesunu; změna identity při přesunu.
 - **Stav:** PŘIPRAVENO — 22 scénářů existuje; runtime/browser běh čeká.
+
+
+## 11. Core Integration Contracts
+
+- **Větev:** `subfeature/core-architecture/integration-contracts` (base `subfeature/core-architecture/world-context`).
+- **Automatická sada:** 10 scénářů v `tests/core-integration.test.js`.
+- **Browser runner:** `tests/core-integration.html`; spustit tlačítkem **Run all Core integration tests**.
+- **Pokrývá:** Bootstrap a deklarované služby, pořadí závislostí, demo systém, Entity/World/World Context spolupráci, Scheduler + Event Bus, Persistence round-trip, selhání atomického zápisu a neúspěšnou přípravu restore bez částečného commitu.
+- **Zakázané chování:** přístup k interním polím jiného modulu; ukládání uprostřed simulačního kroku nebo při nevyřízené frontě událostí; částečně obnovený runtime po chybě přípravy; nahrazení produkčního úložiště testovacím MemorySaveAdapter.
+- **Stav:** PŘIPRAVENO — testy nebyly spuštěny.
