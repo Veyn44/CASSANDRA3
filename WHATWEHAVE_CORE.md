@@ -133,11 +133,11 @@ Implementace: `src/core/world-registry.js`. Detail: `WHATWEHAVE_CORE_WORLD_REGIS
 
 - World Context koordinuje Entity Registry a World Registry a vlastní výhradně evidenci fyzického umístění registrovaných entit.
 - Každá umístěná entita má právě jedno umístění: v jednom mapovém světě na platných souřadnicích, nebo v Entity Store.
-- Přesun zachovává stabilní entity ID a atomicky nahrazuje placement; neplatný cíl ponechá původní umístění beze změny.
+- Přesun zachovává stabilní entity ID a atomicky nahrazuje placement; přesun encounter entity do Entity Store provede i lifecycle přechod Entity Registry. Neplatný cíl ponechá původní umístění beze změny.
 - Encounter-scoped entity lze umístit pouze do encounter world se shodným encounterId. Removed entity nelze umístit; stored entity patří do Entity Store a před návratem do mapy musí být aktivována přes Entity Registry.
 - Persistence participant `core.world-context` (schemaVersion 1) ukládá pouze reference umístění a podporuje prepare/commit/rollback.
 - World Context nevlastní doménový stav entity, vlastnictví, inventář, pravidla smrti, mapová data, galaxii, scan/reveal, cleared stav, spawn nepřátel ani expedition lifecycle.
 - Galaxy System a Location/Expedition systémy budou vlastnit dlouhodobé otisky lokalit a pravidla regenerace encounteru. Výjimky, například zachované mrtvoly Pawnů, budou explicitně uloženy příslušným doménovým systémem a umístěny přes World Context.
 - Navržená hierarchie 16×16 je parametr Galaxy Systemu, nikoli omezení Core.
 
-**Testy:** `tests/world-context.test.js` obsahuje 22 kontraktních scénářů; browser runner `tests/world-context.html`. Runtime spuštění čeká.
+**Testy:** `tests/world-context.test.js` obsahuje 23 kontraktních scénářů; browser runner `tests/world-context.html`. Runtime spuštění čeká.
