@@ -124,7 +124,7 @@ export function createCoreAssembly({
               }
             }
           }],
-          onDiagnostic: (type, details) => logger.warn("Scheduler diagnostic", { type, ...details })
+          onDiagnostic: (diagnostic) => logger.warn("Scheduler diagnostic", diagnostic)
         });
         return { [SERVICE.scheduler]: scheduler };
       }
