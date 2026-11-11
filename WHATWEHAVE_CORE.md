@@ -111,3 +111,19 @@ Implementace: `src/core/entity-registry.js`.
 - `createPersistenceParticipant()` poskytuje povinného účastníka Persistence `core.entity-registry`, schemaVersion 1. Restore je připraven bez vedlejších účinků a atomicky vymění mapu identit; rollback obnoví předchozí mapu.
 
 Rozsah záměrně nezahrnuje World Registry, fyzické přesuny, Pawn Life, inventář, doménovou serializaci, automatické čištění encounteru ani gameplay pravidla smrti.
+
+
+## World Registry — implementační kontrakt
+
+Implementace: `src/core/world-registry.js`. Detail: `WHATWEHAVE_CORE_WORLD_REGISTRY.md`.
+
+- World Registry vlastní identitu, popis a lifecycle skutečných mapových světů; v první verzi podporuje `cassandra` a `encounter`.
+- Každý svět má stabilní `worldId`, vlastní rozměry a označení souřadnicového systému. Core nepředpokládá rozměr 128×128 ani konkrétní tile scale.
+- Encounter world má vlastní `worldId` a `encounterId`, plus odkaz na dlouhodobou `locationId` asteroidu. Opakovaná návštěva lokality může vytvořit nový encounter/world.
+- Stavy jsou `inactive`, `active`, `closed`. Aktivace nového světa atomicky deaktivuje předchozí; současně může být aktivní nejvýše jeden svět.
+- Uzavřít lze pouze neaktivní encounter. Uzavřené ID zůstává rezervované.
+- Galaxy Data Context není hratelný mapový svět.
+- Povinný Persistence participant `core.world-registry`, schemaVersion 1, ukládá popisy světů a activeWorldId; restore ověřuje invariant jediného aktivního světa a podporuje rollback.
+- Registry neobsahuje mapová data, entity, generování galaxie, input routing, rendering ani orchestrace přechodů.
+
+**Testy:** `tests/world-registry.test.js` obsahuje 26 kontraktních scénářů; browser runner je `tests/world-registry.html`. Runtime spuštění čeká.
