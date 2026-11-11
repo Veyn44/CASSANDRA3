@@ -157,3 +157,20 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Architektonický dopad:** Bootstrap vlastní orchestraci a interní Registry. Game Context poskytuje systémům pouze veřejný resolver služeb a oddělené infrastrukturní služby; nesmí odhalovat mutační API Registry.
 
 **Stav:** Schváleno a implementováno v `subfeature/core-architecture/lifecycle-bootstrap`; runtime ověření čeká.
+
+
+## Implementace: Event Bus
+
+**Zvolená implementace:** Samostatná infrastrukturní třída `EventBus` v `src/core/event-bus.js`, která přijímá seznam registrovaných ID systémů a volitelný Logger.
+
+**Důvody technických detailů:**
+- Obálka události je vytvořena Event Busem; volající neurčuje ID ani pořadové číslo.
+- Payload se kopíruje a hluboce zmrazí, aby pozdější změna dat vydavatelem neměnila již publikovanou událost.
+- Seznam odběratelů se snímá při zahájení doručování. Změna odběrů uvnitř handleru ovlivní až následující události.
+- Vnořené publikování pouze přidává do fronty, takže nevzniká rekurzivní doručování ani nejasné pořadí.
+- Chyby handlerů a Loggeru jsou izolované od ostatních odběratelů.
+- Limit zpracovaných událostí chrání proti nekonečnému řetězení; při překročení se zbývající fronta zahodí a zaznamená technická chyba.
+
+**Hranice odpovědnosti:** Event Bus oznamuje již nastalé skutečnosti. Neprovádí příkazy, neukládá historii, nepřehrává události a neparalelizuje handlery.
+
+**Stav:** Implementováno v `subfeature/core-architecture/event-bus`; runtime ověření čeká.
