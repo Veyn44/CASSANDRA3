@@ -67,6 +67,12 @@ export function createCoreAssembly({
       provides: [SERVICE.clock],
       initialize() {
         return { [SERVICE.clock]: new GameClock({ dayLengthRealSeconds, initialSpeed: 1, minimumSpeed: 1, maximumSpeed: 3 }) };
+      },
+      pause(context) {
+        required(context, SERVICE.clock).pause("bootstrap-lifecycle");
+      },
+      resume(context) {
+        required(context, SERVICE.clock).resume("bootstrap-lifecycle");
       }
     },
     {
@@ -113,7 +119,15 @@ export function createCoreAssembly({
             update({ deltaSeconds, tick }) {
               insideSimulationStep = true;
               try {
-                demoSystem?.update?.({ deltaSeconds, tick, context });
+                const result = demoSystem?.update?.({ deltaSeconds, tick, context });
+                if (result && typeof result.then === "function") {
+                  // Prevent a rejected async hook from becoming an unhandled rejection;
+                  // the scheduler contract itself remains strictly synchronous.
+                  if (typeof result.catch === "function") result.catch(() => {});
+                  const error = new Error("Demo system update returned a Promise; simulation updates must be synchronous.");
+                  error.code = "ASYNC_UPDATE_NOT_SUPPORTED";
+                  throw error;
+                }
                 events.publish({
                   type: "core.simulation-step",
                   source: "core.scheduler",
