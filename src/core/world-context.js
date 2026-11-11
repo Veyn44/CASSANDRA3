@@ -91,6 +91,25 @@ export class WorldContext {
     return placement;
   }
 
+  storeEntity(entityId, storeId) {
+    assertId(entityId, "Entity ID");
+    const current = this.#placements.get(entityId);
+    if (!current || current.type !== "world") {
+      throw new WorldContextError("ENTITY_NOT_IN_WORLD", "Only an entity currently placed in a map world can be transferred to the Entity Store.", { entityId });
+    }
+    const stableStoreId = assertId(storeId, "Store ID");
+    const entity = this.#requireActiveEntity(entityId);
+    if (entity.scope !== "encounter" || entity.status !== "active") {
+      throw new WorldContextError("ENTITY_NOT_STORABLE", "Only an active encounter entity can be transferred to the Entity Store.", { entityId, scope: entity.scope, status: entity.status });
+    }
+    // EntityRegistry.store is the only mutating operation and runs after all validation.
+    // The following placement replacement cannot fail, so both registries change in one synchronous operation.
+    this.#entities.store(entityId);
+    const placement = freezePlacement({ entityId, type: "store", storeId: stableStoreId });
+    this.#placements.set(entityId, placement);
+    return Object.freeze({ previous: current, current: placement });
+  }
+
   placeInStore(entityId, storeId) {
     assertId(entityId, "Entity ID");
     if (this.#placements.has(entityId)) {
