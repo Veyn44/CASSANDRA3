@@ -23,7 +23,7 @@ Detailní implementace:
 
 - `src/core/system-bootstrap.js`
 - `tests/lifecycle-bootstrap.test.js`
-- `tests/lifecycle-bootstrap.html`
+- `tests/lifecycle-bootstrap.html`\n- `tests/event-bus.html`
 
 Implementované chování:
 
@@ -37,6 +37,17 @@ Implementované chování:
 - Volitelné `pause(context)` probíhá v opačném pořadí; `resume(context)` v pořadí závislostí.
 - Bootstrap poskytuje stav sestavy a diagnostiku chyb úklidu.
 
+### Event Bus — implementováno, runtime neověřeno
+
+Detail: `WHATWEHAVE_CORE_EVENT_BUS.md`.
+
+- Deterministické synchronní frontové doručování.
+- Neměnná verzovaná obálka události s ID, typem, zdrojem a pořadím.
+- Odběry podle konkrétního typu s deterministickým pořadím.
+- Události publikované během doručování se řadí na konec fronty.
+- Izolace chyb handlerů a limit proti nekonečnému řetězení.
+- Bez persistence, replay a command-bus odpovědnosti.
+
 ## Testování
 
 Testovací scénáře jsou připravené jako samostatné browser stránky. V tomto pracovním prostředí nebylo možné spustit Node.js ani browser runtime; výsledek testů proto není označen jako ověřený.
@@ -48,7 +59,7 @@ Testovací scénáře jsou připravené jako samostatné browser stránky. V tom
 
 1. `context-registry` — implementováno, runtime ověření čeká.
 2. `lifecycle-bootstrap` — implementováno, runtime ověření čeká.
-3. `event-bus`
+3. `event-bus` — implementováno, runtime ověření čeká
 4. `clock-scheduler`
 5. `persistence-logger`
 6. `world-entity-registry`
