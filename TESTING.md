@@ -216,20 +216,8 @@ Každá další implementace musí při svém dokončení doplnit:
 ## 8. World Registry
 
 **Větev:** `subfeature/core-architecture/world-registry`  
-**Automatické:** doplní se po implementaci.
-
-### Kritické kontroly pro následnou integraci
-- [ ] V jednu chvíli existuje nejvýše jeden aktivní mapový svět.
-- [ ] Cassandra a každý asteroidový encounter mají vlastní worldId.
-- [ ] Encounter odkazuje na encounterId a dlouhodobou locationId; opakovaná návštěva stejné lokality vytvoří nový encounter/world.
-- [ ] Galaxie není registrována jako hratelný mapový svět.
-- [ ] Rozměry a souřadnicový prostor jsou vlastností konkrétního světa; Core nepředpokládá pevnou velikost 128×128.
-- [ ] World Registry neukládá seznam entit ani negeneruje galaxii.
-- [ ] Persistence restore zachová registry a aktivní-world invariant.
-
-**Nesmí se stát:** dva současně aktivní světy, aktivní vstupy do neaktivního světa nebo záměna Galaxy Data Contextu za hratelnou mapu.
-
-**Automatické:** 26 scénářů v `tests/world-registry.test.js`. Runner: `tests/world-registry.html`.
+**Automatické:** 26 scénářů v `tests/world-registry.test.js`.  
+**Runner:** `tests/world-registry.html`.
 
 ### Automaticky ověřit
 - [ ] Spustit všech 26 scénářů; všechny musí projít.
