@@ -169,7 +169,6 @@ export class EventBus {
         // delivery affect only subsequent events.
         const recipients = [...(this.#subscriptions.get(event.type) ?? [])];
         for (const recipient of recipients) {
-          if (!recipient.active) continue;
           try {
             recipient.handler(event);
           } catch (error) {
