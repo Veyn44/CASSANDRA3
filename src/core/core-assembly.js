@@ -185,8 +185,8 @@ export function createCoreAssembly({
           type: "cassandra",
           dimensions: { width: 128, height: 128 },
           coordinateSystem: "world-units",
-          activate: true
         });
+        worlds.activateWorld("world:cassandra");
         const entity = entities.registerPersistent({ id: "entity:integration-pawn", kind: "pawn", metadata: { role: "integration-demo" } });
         worldContext.placeEntity(entity.id, "world:cassandra", { x: 12, y: 18 });
         let receivedSteps = 0;
