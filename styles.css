@@ -1,0 +1,16 @@
+:root{color-scheme:dark;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:#0c1117;color:#e8edf2;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0;min-height:100vh;background:radial-gradient(ellipse at 50% 0%,#1b2833 0,#0c1117 58%)}
+.app{width:min(1440px,100%);margin:0 auto;padding:22px 26px 18px}.topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.eyebrow{font-size:10px;letter-spacing:.19em;color:#7e9baa;font-weight:700}h1{font-size:22px;letter-spacing:.02em;margin:5px 0 0;font-weight:650}
+.status{font-size:11px;letter-spacing:.1em;color:#8fbd9f;border:1px solid #355846;background:#15241d;padding:8px 11px;border-radius:5px}
+.toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:10px 0 14px}
+button{font:inherit;font-size:12px;font-weight:650;color:#dce6ec;background:#263541;border:1px solid #405463;border-radius:5px;padding:9px 13px;cursor:pointer}
+button:hover{background:#334956}button:focus-visible{outline:2px solid #7ac4df;outline-offset:2px}
+.group{display:flex;gap:3px;padding:3px;background:#111a22;border:1px solid #2b3b46;border-radius:6px}.group button{border:0;background:transparent;padding:7px 11px}.group button.active{background:#365265;color:#fff}
+.toggle.active{background:#203d36;border-color:#3c7563;color:#a9e0c8}.subtle{background:transparent;border-color:#34434e;color:#aab9c2}.hint{margin-left:auto;color:#81919b;font-size:11px}
+.stage{position:relative;height:min(69vh,760px);min-height:420px;overflow:hidden;background:#101a20;border:1px solid #344752;border-radius:8px;box-shadow:0 18px 60px #0007}
+canvas{display:block;width:100%;height:100%;touch-action:none}.overlay{position:absolute;left:13px;padding:6px 9px;background:#0a1118d9;border:1px solid #344650;border-radius:4px;color:#b8c8d0;font:11px ui-monospace,SFMono-Regular,Consolas,monospace;pointer-events:none}.top-left{top:13px}.bottom-left{bottom:13px}
+.legend{position:absolute;right:12px;bottom:12px;display:flex;gap:13px;flex-wrap:wrap;justify-content:flex-end;padding:8px 10px;background:#0a1118d9;border:1px solid #344650;border-radius:4px;color:#c0cdd3;font-size:10px;pointer-events:none}
+.legend span{display:flex;align-items:center;gap:5px}.dot{width:8px;height:8px;border-radius:50%;display:inline-block}.player{background:#66c9e8}.friend{background:#75c99a}.enemy{background:#df806e}.swatch{width:9px;height:9px;background:#65727a;border:1px solid #aab5ba;display:inline-block}
+footer{padding-top:12px;color:#667984;font-size:10px;letter-spacing:.04em}
+@media(max-width:650px){.app{padding:15px 12px}.hint{width:100%;margin:2px 0 0}.stage{height:65vh;min-height:360px}.legend{left:9px;right:9px;justify-content:flex-start;gap:9px}h1{font-size:19px}}
