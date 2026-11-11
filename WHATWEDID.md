@@ -172,3 +172,22 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Rozsah:** změněny src/arena.js, src/input.js, src/main.js a tato dokumentace. Game Core, Scheduler a kolizní algoritmus nebyly koncepčně měněny; kolizní geometrie byla pouze škálována spolu s mapou.
 
 **Stav ověření:** Implementace je zapsána, ale nebyla spuštěna v prohlížeči. GitHub Pages test a kontrola chování zůstávají otevřené. Neoznačovat jako runtime ověřené.
+
+
+## Rozhodnutí a implementace: jednotný Pawn token
+
+**Rozhodnutí:** Všichni Pawni musí mít stejnou fyzickou velikost i stejný základní vizuální tvar. Protagonista, Mira a nepřítel se rozlišují pouze barvou, nikoli odlišnou geometrií nebo efekty.
+
+**Důvod:** Jednotné měřítko dává hráči okamžitě čitelný vztah mezi Pawnem a mapovou mřížkou. Pawn má zabírat přesně jednu dlaždici; rozdílné velikosti a vykreslení by bez herního důvodu vytvářely falešný dojem odlišného měřítka či fyzických vlastností.
+
+**Provedená změna:**
+- Jedna dlaždice zůstává 4 world units.
+- Fyzický kolizní poloměr všech Pawnů je 2 world units, tedy polovina dlaždice.
+- Všichni Pawni se vykreslují stejným plochým kruhovým tokenem o průměru jedné dlaždice.
+- Barevné rozlišení zůstává: protagonista tyrkysový, Mira jantarová, nepřítel korálový.
+- Všichni mají stejnou malou černou orientační tečku; protagonista mění směr podle kurzoru, ostatní testovací Pawni si zachovávají pevný směr.
+- Odstraněno radiální 3D stínování, vnější halo, pulzování a původní oko protagonisty. Zůstává pouze jemný vnitřní obrys tokenu.
+
+**Rozsah:** změněny `src/arena.js`, `src/main.js`, `WHATWEHAVE.md` a tento dokument. Pohyb, rychlost otáčení, kamera, vstupy, rozměry mapy, rozteč mřížky a samotný algoritmus kolizí zůstávají zachovány.
+
+**Stav ověření:** Změny jsou zapsány do `feature/gameplay-controls-rebuild`. Je nutné znovu otevřít laboratorní stránku po nasazení a ověřit vizuální měřítko i průchodnost kolizí. Runtime PASS zatím není potvrzen.
