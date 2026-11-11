@@ -301,3 +301,22 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Testování:** 26 scénářů je připraveno, ale runtime nebyl spuštěn. Browser a integrační ověření čekají.
 
 **Větev:** `subfeature/core-architecture/world-registry`, založena z `subfeature/core-architecture/entity-registry`; nic nebylo sloučeno do `main`.
+
+
+## Implementace: World Context — 2026-11-11
+
+**Východiska:** bod 6 Core v WHATTODO; Entity Registry a World Registry; pravidla stabilních ID, jediného fyzického umístění a oddělení identity, lifecycle a placement.
+
+**Provedeno:**
+- Přidán `src/core/world-context.js` jako koordinátor Entity Registry a World Registry.
+- Přidána exkluzivní evidence umístění entity buď v mapovém světě (včetně validovaných souřadnic), nebo v Entity Store.
+- Přidány kontroly existující entity/světa, bounds, lifecycle, encounterId a duplicitního umístění.
+- Přesun mění placement až po úspěšné validaci cíle; stabilní entity ID se nemění a selhání zachová původní umístění.
+- Přidán Persistence participant `core.world-context` se snapshotem a prepare/commit/rollback.
+- Přidáno 21 kontraktních scénářů a samostatný one-click browser runner.
+
+**Hranice:** World Context neukládá celý encounter, nepřátele, mapu, generaci galaxie, odhalené scan výsledky, cleared stav ani pravidla opětovného obsazení. Tyto trvalé otisky lokalit budou vlastnit budoucí Galaxy/Location/Expedition systémy. Výslovně zachované entity (např. mrtvola Pawna) budou persistovány příslušným doménovým systémem a jejich placement bude evidován zde. Hierarchie 16×16 zůstává parametrem Galaxy Systemu, nikoli Core.
+
+**Testování:** 21 scénářů připraveno; runtime ani browser test nebyl spuštěn v této relaci. Výsledek je tedy PŘIPRAVENO, nikoli PASS.
+
+**Větev:** `subfeature/core-architecture/world-context`, založena z `subfeature/core-architecture/world-registry`; nebyla sloučena s rodičem ani s `main`.
