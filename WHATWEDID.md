@@ -311,12 +311,12 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 - Přidán `src/core/world-context.js` jako koordinátor Entity Registry a World Registry.
 - Přidána exkluzivní evidence umístění entity buď v mapovém světě (včetně validovaných souřadnic), nebo v Entity Store.
 - Přidány kontroly existující entity/světa, bounds, lifecycle, encounterId a duplicitního umístění.
-- Přesun mění placement až po úspěšné validaci cíle; stabilní entity ID se nemění a selhání zachová původní umístění.
+- Přesun mění placement až po úspěšné validaci cíle; stabilní entity ID se nemění a selhání zachová původní umístění. Přesun encounter entity do Entity Store atomicky provede také lifecycle přechod v Entity Registry.
 - Přidán Persistence participant `core.world-context` se snapshotem a prepare/commit/rollback.
 - Přidáno 22 kontraktních scénářů a samostatný one-click browser runner.
 
 **Hranice:** World Context neukládá celý encounter, nepřátele, mapu, generaci galaxie, odhalené scan výsledky, cleared stav ani pravidla opětovného obsazení. Tyto trvalé otisky lokalit budou vlastnit budoucí Galaxy/Location/Expedition systémy. Výslovně zachované entity (např. mrtvola Pawna) budou persistovány příslušným doménovým systémem a jejich placement bude evidován zde. Hierarchie 16×16 zůstává parametrem Galaxy Systemu, nikoli Core.
 
-**Testování:** 22 scénářů připraveno; runtime ani browser test nebyl spuštěn v této relaci. Výsledek je tedy PŘIPRAVENO, nikoli PASS.
+**Testování:** 23 scénářů připraveno; runtime ani browser test nebyl spuštěn v této relaci. Výsledek je tedy PŘIPRAVENO, nikoli PASS.
 
 **Větev:** `subfeature/core-architecture/world-context`, založena z `subfeature/core-architecture/world-registry`; nebyla sloučena s rodičem ani s `main`.
