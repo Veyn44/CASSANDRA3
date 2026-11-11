@@ -257,8 +257,10 @@ export class Persistence {
         const committed = [];
         try {
           for (const item of prepared) {
-            await item.transaction.commit();
+            // Include the current participant before commit: a failing commit
+            // may have made partial changes and must receive rollback too.
             committed.push(item);
+            await item.transaction.commit();
           }
         } catch (error) {
           for (const item of committed.reverse()) {
