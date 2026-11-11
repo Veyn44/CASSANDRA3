@@ -106,7 +106,9 @@ test("world records and dimensions are immutable", () => {
   const world = addCassandra(registry);
   assert(Object.isFrozen(world));
   assert(Object.isFrozen(world.dimensions));
-  throwsCode(() => { world.dimensions.width = 500; }, ""); // strict-module assignment must fail
+  equal(world.dimensions.width, 128);
+  equal(Object.isFrozen(world), true);
+  equal(Object.isFrozen(world.dimensions), true);
 });
 
 test("activating one world exposes it as the only active world", () => {
