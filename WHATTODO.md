@@ -362,6 +362,128 @@ První kandidáti na samostatné větve:
 
 Větve vytvořit až z dokončeného laboratorního `main`, nikoli nyní z prázdného základu. Konkrétní pořadí a závislosti se mohou upravit podle zkušeností z prvních implementací.
 
+## Návrh struktury feature větví a implementačních podvětví
+
+Toto je pracovní rozpad podle oblastí a odpovědností v WHATTODO. Hlavní feature větev představuje dlouhodobou oblast; její podvětve jsou krátké, postupné implementační kroky. Podvětev se po dokončení a ověření slučuje zpět do své rodičovské feature větve, nikoli přímo do main. Rodičovská větev tak vždy obsahuje poslední společný stav dané oblasti.
+
+### 1. Core Architecture — `feature/core-architecture`
+1. `feature/core-architecture/context-registry` — Game Context, System Registry, služby a závislosti.
+2. `feature/core-architecture/lifecycle-bootstrap` — Bootstrap, lifecycle, bezpečné selhání a úklid.
+3. `feature/core-architecture/event-bus` — event envelope, fronta, subscriptions a izolace chyb.
+4. `feature/core-architecture/clock-scheduler` — Game Clock, fixed timestep a Scheduler.
+5. `feature/core-architecture/persistence-logger` — Persistence kontrakt, Logger a diagnostika.
+6. `feature/core-architecture/world-entity-registry` — Entity Registry, World Registry a World Context.
+7. `feature/core-architecture/integration-contracts` — integrační testy Core a veřejné kontrakty.
+
+### 2. Pawn Life — `feature/pawn-life`
+1. `feature/pawn-life/identity-model` — identita, životní cyklus a stav Pawna.
+2. `feature/pawn-life/body-needs` — tělo, zdraví a potřeby.
+3. `feature/pawn-life/skills-professions` — dovednosti, profese a jejich vývoj.
+4. `feature/pawn-life/equipment-inventory` — vybavení, osobní inventář a přenos vlastnictví.
+5. `feature/pawn-life/locomotion` — pohyb, navigační požadavky a fyzické vlastnosti.
+6. `feature/pawn-life/autonomy-orders` — autonomní chování a jednoduché situační příkazy.
+7. `feature/pawn-life/lifecycle-tests` — narození/stárnutí, smrt a persistence podle schválených pravidel.
+
+### 3. Colony Construction — `feature/colony-construction`
+1. `feature/colony-construction/grid-foundation` — konstrukční mřížka, umisťování a validace.
+2. `feature/colony-construction/terrain-structures` — terén, podlahy, stěny a konstrukční bloky.
+3. `feature/colony-construction/prefab-schema` — JSON schéma a katalog prefabů.
+4. `feature/colony-construction/sections` — sekce, rozměry, půdorysy a hlavní modul.
+5. `feature/colony-construction/corridors-connectors` — chodby, konektory a automatické průchody.
+6. `feature/colony-construction/doors-integrity` — dveře, integrita a stavební změny.
+7. `feature/colony-construction/build-ui` — stavební UI, výběr a validace akcí.
+
+### 4. Environment Systems — `feature/environment-systems`
+1. `feature/environment-systems/space-topology` — prostorové oblasti, sousednost a uzavřené prostory.
+2. `feature/environment-systems/atmosphere-pressure` — tlak, vakuum a atmosférické složení.
+3. `feature/environment-systems/gas-flow` — úniky, proudění a výměna atmosféry.
+4. `feature/environment-systems/temperature-thermal` — teplota a přenos tepla.
+5. `feature/environment-systems/environment-hazards` — nebezpečné podmínky a jejich dopady.
+6. `feature/environment-systems/section-monitoring` — vyhodnocení sekcí, alarmy a napojení na UI.
+
+### 5. Ship Systems — `feature/ship-systems`
+1. `feature/ship-systems/power-generation` — zdroje energie a výroba.
+2. `feature/ship-systems/power-grid` — rozvody, trasy a distribuce.
+3. `feature/ship-systems/power-consumers` — odběry, priority a dostupnost energie.
+4. `feature/ship-systems/life-support` — podpůrné systémy života a jejich vazba na prostředí.
+5. `feature/ship-systems/ship-status` — stav lodi, diagnostika a systémové přehledy.
+6. `feature/ship-systems/bridge-control` — Bridge Console a ovládací rozhraní lodi.
+
+### 6. Resources Industry — `feature/resources-industry`
+1. `feature/resources-industry/material-catalog` — materiály, identifikátory a vlastnosti.
+2. `feature/resources-industry/storage-logistics` — sklady, kapacity a přesuny.
+3. `feature/resources-industry-processing` — zpracování surovin a výrobní recepty.
+4. `feature/resources-industry-machinery` — průmyslové moduly a jejich provoz.
+5. `feature/resources-industry-production-flow` — výrobní řetězce a návaznosti.
+6. `feature/resources-industry-accounting` — spotřeby, výstupy a stav zásob.
+
+### 7. Colony Automation — `feature/colony-automation`
+1. `feature/colony-automation/task-model` — úkoly, priority a vlastnictví práce.
+2. `feature/colony-automation/work-areas` — pracovní zóny a omezení.
+3. `feature/colony-automation/job-selection` — výběr práce a přiřazování Pawnů.
+4. `feature/colony-automation/logistics` — automatické přenášení a zásobování.
+5. `feature/colony-automation/schedules` — denní režimy a plánování činností.
+6. `feature/colony-automation/failure-recovery` — blokované úkoly, opakování a řešení výjimek.
+
+### 8. Expedition Gameplay — `feature/expedition-gameplay`
+1. `feature/expedition-gameplay/expedition-state` — stavový automat expedice a její hranice.
+2. `feature/expedition-gameplay/preparation` — výběr posádky, vybavení a zásob.
+3. `feature/expedition-gameplay/shuttle-manifest` — manifest, vlastnictví a předání nákladu.
+4. `feature/expedition-gameplay/encounter-lifecycle` — start encounteru, snapshot a zmrazení Cassandry.
+5. `feature/expedition-gameplay/end-expedition` — atomické a idempotentní ukončení výpravy.
+6. `feature/expedition-gameplay/return-arrival` — návrat, obnova Pawnů a doručení výsledků.
+7. `feature/expedition-gameplay/mission-report` — briefing, report a pozastavení po příletu.
+
+### 9. Combat Damage — `feature/combat-damage`
+1. `feature/combat-damage/targeting` — cílení a výběr cíle.
+2. `feature/combat-damage/attack-model` — útoky, časování a provedení.
+3. `feature/combat-damage/damage-model` — druhy poškození a výpočet účinku.
+4. `feature/combat-damage/armor-protection` — ochrana, obleky a absorpce.
+5. `feature/combat-damage/projectiles` — projektily a jejich kolize.
+6. `feature/combat-damage/death-incapacitation` — vyřazení, smrt a návaznost na Pawn Life.
+7. `feature/combat-damage/combat-feedback` — bojové události, UI a zvuková zpětná vazba.
+
+### 10. Mining Exploration — `feature/mining-exploration`
+1. `feature/mining-exploration/scan-survey` — skenování a průzkum lokality.
+2. `feature/mining-exploration/deposit-model` — ložiska a jejich datový model.
+3. `feature/mining-exploration/prospecting` — prospekce a odhad zdrojů.
+4. `feature/mining-exploration/surface-mining` — povrchová těžba a změny terénu.
+5. `feature/mining-exploration/resource-yield` — výtěžnost a předání surovin.
+6. `feature/mining-exploration/site-persistence` — trvalé změny lokality mezi návštěvami.
+
+### 11. Galaxy World — `feature/galaxy-world`
+1. `feature/galaxy-world/coordinate-model` — hierarchie galaxie, sektorů, regionů a soustav.
+2. `feature/galaxy-world/deterministic-generation` — seed a lazy generation.
+3. `feature/galaxy-world/star-systems` — hvězdné soustavy a planety.
+4. `feature/galaxy-world/asteroid-model` — asteroidy a lokální data.
+5. `feature/galaxy-world/scanning-discovery` — odhalování a evidence průzkumu.
+6. `feature/galaxy-world/galaxy-map-ui` — navigační mapa a zobrazení objevených dat.
+
+### 12. Navigation Vehicles — `feature/navigation-vehicles`
+1. `feature/navigation-vehicles/ship-navigation` — navigace Cassandry a cílové trasy.
+2. `feature/navigation-vehicles/travel-time` — tranzit, spotřeba času a cestovní stav.
+3. `feature/navigation-vehicles/shuttle-model` — shuttle jako lokální expediční plavidlo.
+4. `feature/navigation-vehicles/shuttle-flight` — let k cíli a návrat v rámci soustavy.
+5. `feature/navigation-vehicles/docking` — dokování, spawn a obnova Pawnů/nákladu.
+6. `feature/navigation-vehicles/navigation-ui` — navigační a letové ovládání.
+
+### Integrační a podpůrné větve
+
+- `integration/gameplay-test` — pouze testovací sestava vybraných rodičovských feature větví; nikdy není zdrojem pro přímý merge do main.
+- `feature/ui-framework` nevytvářet předčasně. UI se vyvíjí nejprve v odpovědnosti konkrétního systému; společná UI infrastruktura vznikne až při prokázané potřebě.
+- `feature/audio-feedback` obdobně až tehdy, kdy budou existovat konkrétní akce a události vyžadující zvuk.
+- `feature/save-load` nebude paralelní náhradou Core Persistence; ukládání kampaně a systému vlastní Core/konkrétní systém podle kontraktu.
+
+### Pravidla tvorby podvětví
+
+- Všechny rodičovské feature větve vzniknou z jednoho ověřeného commit SHA laboratorního main.
+- První podvětev dané oblasti vychází z rodičovské feature větve; další podvětve se zakládají z jejího aktuálního stavu až podle závislostí.
+- Podvětev se po dokončení testů slučuje do své rodičovské feature větve a následně se uzavře.
+- Nezávislé podvětve lze vyvíjet souběžně jen tehdy, když mají stabilní kontrakty a nezasahují do stejných souborů/datových modelů.
+- Integrační větev přijímá vybrané stavy rodičovských feature větví pro kombinované testy. Opravy se vracejí do původní feature větve, nikoli pouze do integration.
+- Do main se přenáší pouze dokončený a ověřený celek po kontrole závislostí a dokumentace.
+- Názvy a pořadí podvětví jsou návrh pracovního členění, nikoli závazek implementovat všechny kroky beze změny. Před každým větším systémem se ověří skutečné závislosti.
+
 ## Pravidla průběžné aktualizace tohoto plánu
 
 - Tento dokument obsahuje aktuální plán a otevřené návrhové úkoly, ne historii commitů.
