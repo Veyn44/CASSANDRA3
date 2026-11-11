@@ -283,7 +283,7 @@ Každý potvrzený běh přidat jako nový řádek. Nevymazávat předchozí ne�
 ## 11. Core Integration Contracts
 
 - **Větev:** `subfeature/core-architecture/integration-contracts` (base `subfeature/core-architecture/world-context`).
-- **Automatická sada:** 10 scénářů v `tests/core-integration.test.js`.
+- **Automatická sada:** 13 scénářů v `tests/core-integration.test.js`.
 - **Browser runner:** `tests/core-integration.html`; spustit tlačítkem **Run all Core integration tests**.
 - **Pokrývá:** Bootstrap a deklarované služby, pořadí závislostí, demo systém, Entity/World/World Context spolupráci, Scheduler + Event Bus, Persistence round-trip, selhání atomického zápisu a neúspěšnou přípravu restore bez částečného commitu.
 - **Zakázané chování:** přístup k interním polím jiného modulu; ukládání uprostřed simulačního kroku nebo při nevyřízené frontě událostí; částečně obnovený runtime po chybě přípravy; nahrazení produkčního úložiště testovacím MemorySaveAdapter.
