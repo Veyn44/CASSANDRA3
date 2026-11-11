@@ -70,7 +70,7 @@ Detail: `WHATWEHAVE_CORE_PERSISTENCE_LOGGER.md`.
 ## Testování
 
 - Clock/Scheduler: 18 cílených runtime kontrol lokálně v Node.js 22 prošlo.
-- Browser runner pro Clock/Scheduler obsahuje 21 scénářů, jeho spuštění čeká.
+- Browser runner pro Clock/Scheduler obsahuje 22 scénářů, jeho spuštění čeká.
 - Browser a integrační ověření Context/Registry, Lifecycle/Bootstrap a Event Bus čeká.
 - Laboratorní aréna v `main` také čeká na samostatné uživatelské ověření.
 
@@ -140,4 +140,4 @@ Implementace: `src/core/world-registry.js`. Detail: `WHATWEHAVE_CORE_WORLD_REGIS
 - Galaxy System a Location/Expedition systémy budou vlastnit dlouhodobé otisky lokalit a pravidla regenerace encounteru. Výjimky, například zachované mrtvoly Pawnů, budou explicitně uloženy příslušným doménovým systémem a umístěny přes World Context.
 - Navržená hierarchie 16×16 je parametr Galaxy Systemu, nikoli omezení Core.
 
-**Testy:** `tests/world-context.test.js` obsahuje 21 kontraktních scénářů; browser runner `tests/world-context.html`. Runtime spuštění čeká.
+**Testy:** `tests/world-context.test.js` obsahuje 22 kontraktních scénářů; browser runner `tests/world-context.html`. Runtime spuštění čeká.
