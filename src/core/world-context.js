@@ -91,6 +91,20 @@ export class WorldContext {
     return placement;
   }
 
+  placeInStore(entityId, storeId) {
+    assertId(entityId, "Entity ID");
+    if (this.#placements.has(entityId)) {
+      throw new WorldContextError("ENTITY_ALREADY_PLACED", `Entity "${entityId}" already has a placement.`, { entityId });
+    }
+    const entity = this.#requireActiveEntity(entityId);
+    if (entity.status !== "stored") {
+      throw new WorldContextError("ENTITY_NOT_STORED", "Only an entity in stored lifecycle state can be placed in the Entity Store.", { entityId, status: entity.status });
+    }
+    const placement = freezePlacement({ entityId, type: "store", storeId: assertId(storeId, "Store ID") });
+    this.#placements.set(entityId, placement);
+    return placement;
+  }
+
   moveEntity(entityId, target) {
     assertId(entityId, "Entity ID");
     const current = this.#placements.get(entityId);
