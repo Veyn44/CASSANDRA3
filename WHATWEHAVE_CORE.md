@@ -94,3 +94,20 @@ Pawn Life, konstrukce, prostředí a další systémy budou záviset na stabiln�
 - Implementovaná funkce se označí jako ověřená až po odpovídajícím runtime testu.
 - Změny veřejných datových kontraktů se musí propsat do navazujících domén a jejich WHATWEHAVE.
 - Tento soubor se aktualizuje při každém dokončeném podkroku a při změně odpovědnosti systému.
+
+
+## Entity Registry — implementační kontrakt
+
+Implementace: `src/core/entity-registry.js`.
+
+- Entity Registry vlastní stabilní identitu a metadata životního cyklu; nevlastní doménový stav, světové umístění, inventář ani vztahy vlastnictví.
+- Persistentní ID se standardně generují pomocí bezpečného UUID zdroje. Testy a řízené prostředí mohou dodat vlastní `idFactory`.
+- Encounter entity používají ID ve tvaru `encounter:<encounterId>:<localId>`; automatické lokální pořadové ID se vede samostatně pro každý encounter.
+- ID se v rámci registru nikdy znovu nepoužije. Odstranění zanechá tombstone, který se zachová ve snapshotu.
+- Stavy identity: `active`, `stored`, `removed`. `active` neznamená, že je instance načtená do mapy.
+- `store(id)` je explicitní přechod encounter entity do persistentního Entity Store. Ukládá pouze identitu/metadata; skutečný stav entity ukládá její doménový vlastník.
+- `activateStored(id)` obnoví identitu do aktivního stavu, ale neurčuje svět ani souřadnice.
+- Metadata jsou volitelná, bezpečně kopírovaná a hluboce neměnná JSON-like data.
+- `createPersistenceParticipant()` poskytuje povinného účastníka Persistence `core.entity-registry`, schemaVersion 1. Restore je připraven bez vedlejších účinků a atomicky vymění mapu identit; rollback obnoví předchozí mapu.
+
+Rozsah záměrně nezahrnuje World Registry, fyzické přesuny, Pawn Life, inventář, doménovou serializaci, automatické čištění encounteru ani gameplay pravidla smrti.
