@@ -41,26 +41,18 @@ Popis má být stručný, ale dostatečně vysvětlující, aby bylo jasné, co 
 
 ## Gameplay Controls — pracovní větev
 
-**Větev:** `feature/gameplay-controls`
+**Aktuální větev:** `feature/gameplay-controls-rebuild`
 
 - Nové rozložení laboratorního prostředí přes celou dostupnou plochu: levý příkazový panel, centrální mapa a pravý stavový panel.
 - Připravené přepínání skutečného fullscreen režimu přes uživatelské tlačítko.
 - Draft lze přepínat tlačítkem i klávesou `F`.
 - Pause lze přepínat tlačítkem i mezerníkem; při pauze se zobrazuje pulzující žlutý rám mapy.
-- Kamera standardně sleduje protagonisty. Kolečko mění zoom se zachováním bodu pod kurzorem, čímž umožňuje odklon pohledu; další vstup WASD obnoví Camera Lock.
+- Kamera standardně sleduje protagonisty. Kolečko mění zoom se zachováním bodu pod kurzorem; prostřední tlačítko umožňuje ruční posun mapy. Vstup WASD obnoví Camera Lock.
 - Vstupní stav WASD zůstává zachován přes pauzu; při ztrátě fokusu okna nebo skrytí stránky se bezpečně vymaže.
 - Pohyb je nastaven na 4 mapové dlaždice za sekundu při 1×. Jedna dlaždice odpovídá 4 world units; laboratorní rychlosti 2×/3× násobí pohyb stejně jako dosavadní testovací ovládání.
+- Mapa má rozměr 128 × 128 dlaždic, tedy 512 × 512 world units.
+- **Všichni Pawni používají jednotný vizuální tvar a velikost:** jednoduchý plochý kruhový token o průměru přesně jedné dlaždice. Protagonista, Mira i nepřítel se liší pouze barvou.
+- Každý Pawn má stejnou malou černou orientační tečku, která ukazuje jeho směr. Protagonista se orientuje podle kurzoru; ostatní testovací Pawni mají zatím pevný směr.
+- Fyzický kolizní poloměr Pawna odpovídá polovině dlaždice. Kolizní algoritmus zůstává stejný; změnila se pouze velikost jeho kruhové geometrie.
 
-**Stav ověření:** Implementace je zapsána v pracovní větvi, ale zatím nebyla ověřena spuštěním v prohlížeči. Vizuální doladění a případné opravy čekají na uživatelský test. Tato větev není schválená pro sloučení do `main`.
-
-
-## Gameplay Controls — druhá iterace (runtime ověření čeká)
-
-- Mapa má rozměr 128 × 128 dlaždic; jedna dlaždice odpovídá 4 world units, celkem tedy 512 × 512 world units.
-- Protagonista má kulaté tyrkysové tělo s měkkým pulzujícím halo a jediné oko sledující směr pohledu; směrová šipka byla odstraněna.
-- Oko se otáčí maximální rychlostí 240°/s. Zaměřování je aktivní pouze při běžící simulaci a zapnutém Draft režimu; během pauzy i při Draft OFF zůstává směr zmrazen.
-- Prostřední tlačítko myši umožňuje ruční posun kamery tažením mapy, včetně pauzy. Kolečko nadále ovládá zoom kolem kurzoru.
-- Stisknutí WASD obnovuje Camera Lock i při pauze; samotný pohyb protagonisty zůstává při pauze zastaven.
-- Pohyb je 4 dlaždice/s při 1×; kolizní model a terénní pravidla zůstaly zachovány, jejich souřadnice a rozměry byly proporcionálně převedeny do nové mapové velikosti.
-
-**Stav ověření:** Změny jsou zapsány v pracovní větvi. Prohlížečový test přes GitHub Pages zatím čeká; tento popis neznamená potvrzený runtime PASS.
+**Stav ověření:** Nová verze byla uživatelem otevřena přes GitHub Pages a základní funkčnost ovládání byla potvrzena. Poslední úprava jednotného vzhledu a velikosti Pawnů je zapsána v této pracovní větvi a čeká na nové ověření v prohlížeči. Větev není schválená pro sloučení do `main`.
