@@ -84,10 +84,7 @@ test("stored entity can be assigned to Entity Store placement", () => {
   const { entities, context } = setup();
   entities.registerEncounter({ encounterId: "encounter:a", localId: "body", kind: "pawn" });
   entities.store("encounter:encounter:a:body");
-  // Stored entities receive their initial store placement through the same move contract.
-  // The first placement API intentionally requires an active world; seed through restore below.
-  const restore = context.prepareRestore({ version: 1, placements: [{ entityId: "encounter:encounter:a:body", type: "store", storeId: "campaign:entity-store" }] });
-  restore.commit();
+  context.placeInStore("encounter:encounter:a:body", "campaign:entity-store");
   equal(context.getPlacement("encounter:encounter:a:body").storeId, "campaign:entity-store");
 });
 test("stored entities cannot transfer to a world until activated", () => {
@@ -158,10 +155,22 @@ test("snapshot restore validates stored placement lifecycle", () => {
   equal(context.getPlacement("encounter:encounter:a:body").type, "store");
 });
 
-let passed = 0;
-for (const item of tests) {
-  try { item.run(); passed += 1; console.log(`PASS ${item.name}`); }
-  catch (error) { console.error(`FAIL ${item.name}: ${error.message}`); }
+function runAll() {
+  let passed = 0;
+  const lines = [];
+  for (const item of tests) {
+    try { item.run(); passed += 1; lines.push(`PASS ${item.name}`); }
+    catch (error) { lines.push(`FAIL ${item.name}: ${error.message}`); }
+  }
+  lines.push(`RESULT ${passed}/${tests.length} passed`);
+  if (typeof document !== "undefined") document.querySelector("#results").textContent = lines.join("\\n");
+  if (passed !== tests.length) throw new Error(`World Context tests failed: ${passed}/${tests.length}`);
+  return { passed, total: tests.length };
 }
-console.log(`RESULT ${passed}/${tests.length} passed`);
-if (passed !== tests.length) throw new Error(`World Context tests failed: ${passed}/${tests.length}`);
+if (typeof document !== "undefined") {
+  document.querySelector("#run")?.addEventListener("click", runAll);
+  document.querySelector("#results").textContent = "Ready. Press Run tests.";
+} else {
+  const result = runAll();
+  console.log(`RESULT ${result.passed}/${result.total} passed`);
+}
