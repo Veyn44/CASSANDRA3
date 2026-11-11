@@ -56,6 +56,17 @@ Detail: `WHATWEHAVE_CORE_CLOCK_SCHEDULER.md`.
 - Varování a nouzová pauza při kritickém backlogu; žádné zahazování strategického času.
 - Bez druhého Game Clocku pro encounter a bez paralelního doručování událostí.
 
+### Persistence & Logger — implementováno, runtime ověření čeká
+
+Detail: `WHATWEHAVE_CORE_PERSISTENCE_LOGGER.md`.
+
+- Centrální Logger s pěti úrovněmi, strukturovanými záznamy, filtrováním a omezenou historií.
+- Persistence koordinuje snapshoty systémů, ale nevlastní jejich herní data.
+- Save/load vyžaduje explicitní bezpečnou hranici dodanou integrační vrstvou.
+- Atomický zápis je kontraktem úložiště; předchozí platný save musí zůstat nedotčený při selhání.
+- Obnova je dvoufázová: příprava všech účastníků, následný commit a rollback při chybě.
+- Produkční úložiště, UI slotů a integrace Scheduler/Event Bus zatím nejsou zapojeny.
+
 ## Testování
 
 - Clock/Scheduler: 18 cílených runtime kontrol lokálně v Node.js 22 prošlo.
@@ -69,7 +80,7 @@ Detail: `WHATWEHAVE_CORE_CLOCK_SCHEDULER.md`.
 2. `lifecycle-bootstrap` — implementováno, runtime ověření čeká.
 3. `event-bus` — implementováno, runtime ověření čeká.
 4. `clock-scheduler` — implementováno, lokální Node.js kontroly prošly; browser ověření čeká.
-5. `persistence-logger`
+5. `persistence-logger` — implementováno, runtime ověření čeká.
 6. `world-entity-registry`
 7. `integration-contracts`
 
