@@ -213,8 +213,8 @@ export function runClockSchedulerTests() {
     const scheduler = new SimulationScheduler({
       clock, systemOrder: [], warningBacklogSeconds: 12, criticalBacklogSeconds: 30
     });
-    clock.pause("manual");
     scheduler.advance(0.3);
+    clock.pause("manual");
     assert(clock.paused, "Clock remains paused.");
     assert(scheduler.acknowledgeOverload(), "Acknowledgement should clear overload state.");
     assert(clock.paused, "Manual pause must remain active.");
