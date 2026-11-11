@@ -135,3 +135,40 @@ Nová rozhodnutí se přidávají chronologicky. Starší záznamy se nemažou j
 **Dočasné laboratorní chování:** Rychlosti 1×/2×/3× násobí delta pohybu v aréně, protože laboratoř ověřuje společné ovládací prvky. Toto chování nepřebíjí schválené pravidlo WHATTODO/WHATWEDID: v ostrém encounteru bude pohyb probíhat v reálném čase a nebude násoben strategickou rychlostí.
 
 **Stav:** Implementace zapsána do main; runtime ověření čeká.
+
+
+## Rozhodnutí a implementace: Gameplay Controls & Visual Foundation
+
+**Rozhodnutí:** Před integrací Game Core je nutné uvést laboratorní prostředí do souladu s požadovaným hráčským ovládáním a vizuální základnou. Změny probíhají izolovaně ve větvi `feature/gameplay-controls`, vytvořené z aktuálního `main`; `main` zůstává nedotčený.
+
+**Vizuální směr:** Nové unikátní rozhraní s tmavým technickým vzhledem, třemi oblastmi (příkazový panel, herní mapa, stavový panel), jemnou mřížkou a tyrkysovými/jantarovými akcenty. Starší Cassandra New sloužila pouze jako vizuální inspirace; její repozitář ani kód nebyly použity.
+
+**Ovládací rozhodnutí:**
+- Fullscreen rozvržení vyplňuje viewport; skutečný fullscreen prohlížeče se aktivuje uživatelským tlačítkem, protože prohlížeč vyžaduje explicitní gesto.
+- Draft se ovládá tlačítkem nebo klávesou `F`.
+- Pause se ovládá tlačítkem nebo mezerníkem a vizuálně se projevuje pulzujícím žlutým rámem mapy.
+- Kamera je po startu zamčená na protagonistu. Kolečko zoomuje kolem kurzoru a tím dovoluje odklonit pohled; pohyb WASD Camera Lock obnoví.
+- Držený pohybový vstup se při pauze nemaže. Při ztrátě fokusu nebo skrytí stránky se vstupy vymažou, aby nezůstal nechtěně aktivní pohyb.
+- Mřížka používá rozestup 4 world units na dlaždici. Pohyb je nastaven na 4 dlaždice/s při 1× (16 world units/s); laboratorní volby 2×/3× jej násobí.
+
+**Architektonické hranice:** Změněny pouze `index.html`, `styles.css`, `src/input.js` a `src/main.js`. Kolizní model v `src/arena.js`, Game Core, Game Clock a Scheduler zůstaly beze změny.
+
+**Ověření:** GitHub compare potvrzuje, že větev obsahuje čtyři commity nad `main` a žádné commity za `main` (`ahead 4, behind 0`). Runtime test v prohlížeči zatím nebyl proveden; implementace proto není označena jako ověřená.
+
+**Stav:** Implementace první verze dokončena v pracovní větvi; čeká na uživatelské spuštění a zpětnou vazbu.
+
+
+## Rozhodnutí a implementace: Gameplay Controls — druhá iterace
+
+**Schválené požadavky:** mapa 128 × 128 dlaždic; turn rate oka 240°/s; ruční kamera tažením prostředním tlačítkem i během pauzy; zmrazení zaměřování při pauze; pulzující kulatý tyrkysový protagonista bez směrové šipky.
+
+**Provedená změna:**
+- Rozměr jedné dlaždice zůstává 4 world units. Mapa nyní obsahuje 128 × 128 dlaždic (512 × 512 world units). Startovní pozice Pawnů i terénní překážky byly proporcionálně převedeny, včetně kolizního poloměru.
+- Protagonista je vykreslen jako kulová tyrkysová entita s radiálním světelným halo, jemným pulzem a jediným okem.
+- Oko sleduje kurzor jen při aktivní simulaci a Draft ON; rotace je omezena na 240°/s. Pauza a Draft OFF zmrazují orientaci.
+- Prostřední tlačítko s pointer capture posouvá kameru tažením, včetně pauzy. Kolečko zachovává zoom kolem kurzoru.
+- WASD znovu aktivuje Camera Lock. Během pauzy však samotný pohyb Pawna zůstává blokován.
+
+**Rozsah:** změněny src/arena.js, src/input.js, src/main.js a tato dokumentace. Game Core, Scheduler a kolizní algoritmus nebyly koncepčně měněny; kolizní geometrie byla pouze škálována spolu s mapou.
+
+**Stav ověření:** Implementace je zapsána, ale nebyla spuštěna v prohlížeči. GitHub Pages test a kontrola chování zůstávají otevřené. Neoznačovat jako runtime ověřené.
