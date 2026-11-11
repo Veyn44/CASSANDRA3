@@ -1,20 +1,53 @@
 # WHATWEHAVE — Core Architecture
 
-> **Stav větve:** připravená pracovní větev; doménová implementace zatím nezačala.
-> **Základ:** laboratorní `main` v okamžiku vytvoření větví. Laboratorní základ zatím čeká na uživatelské ověření v prohlížeči.
+> **Stav větve:** rozpracováno na subfeature větvích. Runtime ověření zatím čeká.
+> **Základ:** laboratorní `main`; jeho runtime ověření také čeká.
 
 ## Co tato oblast vlastní
 
 Game Context, System Registry, Bootstrap a lifecycle, Event Bus, Game Clock, Scheduler, Persistence, Logger, Entity/World Registry.
 
-## Aktuálně implementováno v této oblasti
+## Aktuálně implementováno
 
-Zatím nic. Větev zatím obsahuje pouze společný laboratorní základ zděděný z `main`. Následující body jsou plán, nikoli hotové funkce.
+### Context & Registry — implementováno, runtime neověřeno
+
+Detail: `WHATWEHAVE_CORE_CONTEXT.md`.
+
+- System Registry s deklaracemi služeb, kontrolou závislostí a deterministickým pořadím.
+- Game Context s oddělenou infrastrukturní a doménovou službou.
+- Registry není přes Game Context veřejně přístupná pro mutace.
+
+### Lifecycle & Bootstrap — implementováno, runtime neověřeno
+
+Detailní implementace:
+
+- `src/core/system-bootstrap.js`
+- `tests/lifecycle-bootstrap.test.js`
+- `tests/lifecycle-bootstrap.html`
+
+Implementované chování:
+
+- Explicitní seznam systémů a deklarací se validuje před prvním lifecycle hookem.
+- Inicializace probíhá v topologickém pořadí System Registry.
+- Veřejná API služeb se zveřejní až po úspěšném dokončení `initialize(context)` poskytovatele.
+- `start(context)` se volá až poté, co úspěšně inicializují všechny systémy.
+- Selhání initialize/start přeruší spuštění a vyvolá rollback.
+- Rollback volá `destroy(context)` na všech úspěšně inicializovaných systémech v opačném pořadí.
+- Chyba v destroy se zaznamená, ale nebrání úklidu dalších systémů.
+- Volitelné `pause(context)` probíhá v opačném pořadí; `resume(context)` v pořadí závislostí.
+- Bootstrap poskytuje stav sestavy a diagnostiku chyb úklidu.
+
+## Testování
+
+Testovací scénáře jsou připravené jako samostatné browser stránky. V tomto pracovním prostředí nebylo možné spustit Node.js ani browser runtime; výsledek testů proto není označen jako ověřený.
+
+- `tests/core-registry.html`
+- `tests/lifecycle-bootstrap.html`
 
 ## Navržené implementační podvětve
 
-1. `context-registry`
-2. `lifecycle-bootstrap`
+1. `context-registry` — implementováno, runtime ověření čeká.
+2. `lifecycle-bootstrap` — implementováno, runtime ověření čeká.
 3. `event-bus`
 4. `clock-scheduler`
 5. `persistence-logger`
@@ -28,7 +61,6 @@ Pawn Life, konstrukce, prostředí a další systémy budou záviset na stabiln�
 ## Pravidla evidence stavu
 
 - Každou funkci označujeme jako **navrženou**, **rozpracovanou**, **implementovanou**, nebo **ověřenou**.
-- Do tohoto dokumentu patří pouze skutečný stav této domény; plány zůstávají v `WHATTODO.md`.
 - Implementovaná funkce se označí jako ověřená až po samostatném testu.
 - Změny veřejných datových kontraktů se musí propsat do navazujících domén a jejich WHATWEHAVE.
 - Tento soubor se aktualizuje při každém dokončeném podkroku a při změně odpovědnosti systému.
