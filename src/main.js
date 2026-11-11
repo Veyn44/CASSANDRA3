@@ -149,7 +149,7 @@ function draw() {
   for (const pawn of arena.pawns) drawPawn(pawn);
   ctx.restore();
   stage.classList.toggle("paused", paused); ui.pause.classList.toggle("is-paused", paused);
-  ui.pause.innerHTML = paused ? "<span><i class=\\"pause-glyph\\">▶</i> RESUME SIMULATION</span><kbd>SPACE</kbd>" : "<span><i class=\\"pause-glyph\\">Ⅱ</i> PAUSE SIMULATION</span><kbd>SPACE</kbd>";
+  ui.pause.innerHTML = paused ? '<span><i class="pause-glyph">▶</i> RESUME SIMULATION</span><kbd>SPACE</kbd>' : '<span><i class="pause-glyph">Ⅱ</i> PAUSE SIMULATION</span><kbd>SPACE</kbd>';
   ui.draft.classList.toggle("active", drafted);
   ui.speedLabel.textContent = `${speed}×`;
   ui.diagnostics.textContent = `FPS ${fps} · ZOOM ${Math.round(zoom * 100)}% · MAP 128×128`;
