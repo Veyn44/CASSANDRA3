@@ -51,9 +51,11 @@ export class SystemRegistry {
     if (this.#systems.has(id)) {
       throw new RegistryError("DUPLICATE_SYSTEM_ID", `System ID "${id}" is already registered.`, { systemId: id });
     }
+
     const provided = normalizeServices(provides, "provided services");
     const required = normalizeServices(requires, "required services");
-    this.#systems.set(id, Object.freeze({ id, provides: provided, requires: required }));
+
+    // Validate the entire declaration before mutating registry state.
     for (const service of provided) {
       const existing = this.#providers.get(service.id);
       if (existing) {
@@ -63,12 +65,16 @@ export class SystemRegistry {
           { serviceId: service.id, providers: [existing, id] }
         );
       }
-      this.#providers.set(service.id, id);
     }
+
+    this.#systems.set(id, Object.freeze({ id, provides: provided, requires: required }));
+    for (const service of provided) this.#providers.set(service.id, id);
     return this;
   }
 
   validate() {
+    if (this.#validated) return this.#initializationOrder;
+
     const dependencies = new Map();
     for (const [systemId, declaration] of this.#systems) {
       const providers = new Set();
@@ -82,7 +88,14 @@ export class SystemRegistry {
             { systemId, serviceId: requirement.id }
           );
         }
-        if (providerId !== systemId) providers.add(providerId);
+        if (providerId === systemId) {
+          throw new RegistryError(
+            "SELF_DEPENDENCY",
+            `System "${systemId}" cannot require its own service "${requirement.id}".`,
+            { systemId, serviceId: requirement.id }
+          );
+        }
+        providers.add(providerId);
       }
       dependencies.set(systemId, providers);
     }
