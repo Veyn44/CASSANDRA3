@@ -57,8 +57,8 @@ function update(dt) {
   }
   const v = worldView();
   const halfW = v.viewW / 2, halfH = v.viewH / 2;
-  camera.x = clamp(camera.x, halfW - 8, WORLD.width - halfW + 8);
-  camera.y = clamp(camera.y, halfH - 8, WORLD.height - halfH + 8);
+  camera.x = halfW * 2 >= WORLD.width + 16 ? WORLD.width / 2 : clamp(camera.x, halfW - 8, WORLD.width - halfW + 8);
+  camera.y = halfH * 2 >= WORLD.height + 16 ? WORLD.height / 2 : clamp(camera.y, halfH - 8, WORLD.height - halfH + 8);
   ui.coordinates.textContent = `X ${pawn.x.toFixed(1)} · Y ${pawn.y.toFixed(1)}`;
 }
 function draw() {
