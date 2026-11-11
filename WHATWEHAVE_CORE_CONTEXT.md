@@ -1,8 +1,8 @@
 # WHATWEHAVE — Core / Context & Registry
 
-> **Stav:** implementováno; automatické testy Node.js prošly. Samostatný browser test runner je připraven, ale zatím nebyl ověřen v prohlížeči.
-> **Větev:** `subfeature/core-architecture/context-registry`
-> **Rodičovská větev:** `feature/core-architecture`
+> **Stav:** implementováno; automatické testy a browser runner jsou připravené, ale v tomto pracovním prostředí nebyly spuštěny. Runtime ověření čeká.
+> **Původní větev:** `subfeature/core-architecture/context-registry`
+> **Aktuální větev:** `subfeature/core-architecture/lifecycle-bootstrap`
 
 ## Implementované soubory
 
@@ -39,41 +39,21 @@ Implementováno:
 - Kontext přijímá instanci System Registry.
 - Společné infrastrukturní služby přijímá odděleně v mapě `infrastructure`.
 - Infrastrukturu zpřístupňuje přes `hasInfrastructureService()` a `getInfrastructureService()`.
-- Doménové služby zpřístupňuje přes `hasService()` a `getService()`, delegované do System Registry.
+- Doménové služby zpřístupňuje přes `hasService()` a `getService()`.
+- Interní Registry je uložena jako privátní reference; `GameContext` ji nevystavuje přes veřejné `systems`.
+- Herní systémy tedy nemohou přes kontext volat `register()` ani `publishService()`.
 - Chybějící infrastrukturní služba vyvolá diagnostickou chybu.
-- Context neukládá doménová data a nemá natvrdo definované vlastnosti jednotlivých herních systémů.
+- Context neukládá doménová data.
 
 ## Testování
 
-`tests/core-registry.test.js` pokrývá 12 scénářů:
+`tests/core-registry.test.js` obsahuje 12 scénářů. Dřívější zápis o úspěšném Node.js běhu nebyl v tomto pracovním prostředí doložen skutečným spuštěním; proto jej nepovažujeme za ověřený výsledek.
 
-1. Pořadí poskytovatelů a konzumentů.
-2. Duplicitní ID systému.
-3. Duplicitní poskytovatel a atomické odmítnutí chybné registrace.
-4. Chybějící povinná služba.
-5. Chybějící volitelná služba.
-6. Cyklus závislostí.
-7. Vlastní závislost systému.
-8. Zveřejnění a získání veřejné služby.
-9. Rozlišení neznámé a nepřipravené služby.
-10. Uzamčení registrace po validaci.
-11. Oddělení infrastruktury od doménových služeb.
-12. Diagnostika chybějící infrastrukturní služby.
-
-**Výsledek lokálního běhu:** 12/12 testů prošlo v Node.js.
-
-Browser runner: otevřít `tests/core-registry.html` přes lokální webový server. Je připraven, ale jeho vykreslení a spuštění v prohlížeči zatím není ověřeno.
+Browser runner: `tests/core-registry.html`. Připraven, runtime ověření čeká.
 
 ## Záměrně mimo rozsah
 
-- Bootstrap a automatické volání lifecycle hooků.
-- `initialize(context)`, `start()`, `pause()`, `resume()`, `destroy()` jako orchestrace.
+- Lifecycle orchestrace (navazující implementace).
 - Event Bus, Game Clock, Scheduler, Persistence a Logger jako konkrétní implementace.
 - World/Entity Registry a doménová herní data.
 - Simulace Cassandry, shuttle, cestování a encounterů.
-
-`publishService()` je připravené rozhraní pro zveřejnění veřejného API poskytovatele. Navazující Lifecycle/Bootstrap krok určí přesný okamžik jeho volání po úspěšné inicializaci poskytovatele.
-
-## Další krok
-
-Navazující podvětev: `subfeature/core-architecture/lifecycle-bootstrap`. Před jejím zahájením se ověří tato testovací stránka v prohlížeči a případné připomínky se opraví v této podvětvi.
