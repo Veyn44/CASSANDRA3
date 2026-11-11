@@ -10,7 +10,7 @@ U každé funkce uvádíme:
 - jaká jsou její současná omezení,
 - případně kde se ve hře nachází nebo jak se aktivuje.
 
-Popis má být stručný, ale dostatečně vysvětlující, aby bylo jasné, co daná funkce v kontextu hry znamená. Nezapisujeme sem dlouhé úvahy o tom, proč jsme ji navrhli; ty patří do `WAHTWEDID.md`.
+Popis má být stručný, ale dostatečně vysvětlující, aby bylo jasné, co daná funkce v kontextu hry znamená. Nezapisujeme sem dlouhé úvahy o tom, proč jsme ji navrhli; ty patří do `WHATWEDID.md`.
 
 ## Aktuální stav CASSANDRA3
 
@@ -25,5 +25,5 @@ Repozitář CASSANDRA3 je nová čistá vývojová základna. Při založení to
 - Při odstranění nebo zásadní změně funkce aktualizovat její popis.
 - Popisovat funkce z pohledu hry a hráče, ne jako seznam tříd a souborů.
 - Technické detaily API patří do dokumentace konkrétního systému.
-- Důvody, záměry a filozofie rozhodnutí patří do `WAHTWEDID.md`.
+- Důvody, záměry a filozofie rozhodnutí patří do `WHATWEDID.md`.
 - Plány a dosud neimplementované požadavky patří do `WHATTODO.md`.
