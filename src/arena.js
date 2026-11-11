@@ -1,13 +1,13 @@
 export const TILE_SIZE = 4;
 export const WORLD = { width: 128 * TILE_SIZE, height: 128 * TILE_SIZE };
-export const PAWN_RADIUS = 1.15 * TILE_SIZE;
+export const PAWN_RADIUS = TILE_SIZE / 2;
 
 export function createArena() {
   const scale = TILE_SIZE;
   return {
     pawns: [
-      { id: "protagonist", name: "Protagonist", role: "player", x: 24 * scale, y: 24 * scale, facing: 0, color: "#66c9e8" },
-      { id: "mira", name: "Mira", role: "friendly", x: 31 * scale, y: 27 * scale, facing: Math.PI, color: "#75c99a" },
+      { id: "protagonist", name: "Protagonist", role: "player", x: 24 * scale, y: 24 * scale, facing: 0, color: "#55dcd2" },
+      { id: "mira", name: "Mira", role: "friendly", x: 31 * scale, y: 27 * scale, facing: Math.PI, color: "#e6b65e" },
       { id: "enemy", name: "Enemy", role: "enemy", x: 83 * scale, y: 74 * scale, facing: Math.PI, color: "#df806e" }
     ],
     terrain: [
