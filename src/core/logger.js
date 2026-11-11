@@ -96,7 +96,7 @@ export class Logger {
       .filter((record) => LEVELS[record.level] >= LEVELS[minimumLevel])
       .filter((record) => category === null || record.category === category)
       .filter((record) => source === null || record.source === source)
-      .slice(-limit));
+      .slice(limit === 0 ? this.#records.length : -limit));
   }
 
   clear() {
