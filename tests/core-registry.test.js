@@ -36,10 +36,12 @@ export function runCoreRegistryTests() {
     expectCode(() => registry.register({ id: "pawn" }), "DUPLICATE_SYSTEM_ID");
   });
 
-  test("rejects duplicate service providers", () => {
+  test("rejects duplicate service providers without partially registering the rejected system", () => {
     const registry = new SystemRegistry();
     registry.register({ id: "clock-a", provides: ["clock.api"] });
-    expectCode(() => registry.register({ id: "clock-b", provides: ["clock.api"] }), "DUPLICATE_SERVICE_PROVIDER");
+    expectCode(() => registry.register({ id: "clock-b", provides: ["clock.api", "calendar.api"] }), "DUPLICATE_SERVICE_PROVIDER");
+    registry.register({ id: "calendar", provides: ["calendar.api"] });
+    assert(registry.validate().join(",") === "clock-a,calendar", "Rejected registration must not reserve IDs or services.");
   });
 
   test("rejects missing required services before startup", () => {
@@ -59,6 +61,12 @@ export function runCoreRegistryTests() {
     registry.register({ id: "alpha", provides: ["alpha.api"], requires: ["beta.api"] });
     registry.register({ id: "beta", provides: ["beta.api"], requires: ["alpha.api"] });
     expectCode(() => registry.validate(), "DEPENDENCY_CYCLE");
+  });
+
+  test("rejects a system requiring its own service", () => {
+    const registry = new SystemRegistry();
+    registry.register({ id: "clock", provides: ["clock.api"], requires: ["clock.api"] });
+    expectCode(() => registry.validate(), "SELF_DEPENDENCY");
   });
 
   test("publishes and resolves only declared public services", () => {
