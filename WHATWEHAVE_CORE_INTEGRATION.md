@@ -58,7 +58,7 @@ No construction, atmosphere, combat, mining, colony economy, galaxy generation, 
 
 ## Verification status
 
-Automated scenarios are prepared in `tests/core-integration.test.js` (15 scenarios); browser runner: `tests/core-integration.html`. They have **not been run** in this environment. Status: **PŘIPRAVENO**, not PASS.
+Automated scenarios are prepared in `tests/core-integration.test.js` (16 scenarios); browser runner: `tests/core-integration.html`. They have **not been run** in this environment. Status: **PŘIPRAVENO**, not PASS.
 
 ## Explicit safe-boundary limitation
 
